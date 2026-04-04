@@ -1,0 +1,19 @@
+.inputGroup input {
+  width: 100%;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.inputGroup input::placeholder {
+  color: var(--text-secondary);
+}
+
+.inputGroup input:focus {
+  border-color: var(--corporate-gray-7);
+}

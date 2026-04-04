@@ -1,0 +1,126 @@
+.workspacePlaceholder {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.workspacePlaceholder h2 {
+  font-size: 2.5rem;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.highlight {
+  color: var(--corporate-red);
+}
+
+.settingsWrapper {
+  position: relative;
+}
+
+.avatarCircle {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: var(--corporate-red);
+  color: var(--corporate-white);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 4px 10px rgba(227, 25, 55, 0.4);
+  transition: transform 0.2s ease;
+}
+
+.avatarCircle:hover {
+  transform: scale(1.05);
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  width: 320px;
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+  animation: slideDown 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdownHeader {
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+}
+
+.dropdownHeader h4 {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+}
+
+.dropdownHeader p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.controlsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 15px;
+}
+
+.controlGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.controlGroup label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.controlSelect {
+  background: var(--input-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 0.85rem;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  outline: none;
+}
+
+.dropdownForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dropdownForm h5 {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}

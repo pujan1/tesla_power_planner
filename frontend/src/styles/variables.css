@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+:root {
+  /* Corporate Palette */
+  --corporate-white: #FFFFFF;
+  --corporate-black: #000000;
+  --corporate-red: #E31937;
+  --corporate-gray-4: #C9CBCC;
+  --corporate-gray-7: #AEB0B2;
+  --corporate-gray-11: #717074;
+}
+
+body.theme-dark {
+  --bg-primary: var(--corporate-black);
+  --bg-secondary: var(--corporate-gray-11);
+  --bg-navbar: rgba(0, 0, 0, 0.7);
+  --text-primary: var(--corporate-white);
+  --text-secondary: var(--corporate-gray-4);
+  --border-color: rgba(255, 255, 255, 0.15);
+  --card-bg: rgba(113, 112, 116, 0.2); 
+  --input-bg: rgba(0, 0, 0, 0.4);
+}
+
+body.theme-light {
+  --bg-primary: var(--corporate-white);
+  --bg-secondary: var(--corporate-gray-4);
+  --bg-navbar: rgba(255, 255, 255, 0.7);
+  --text-primary: var(--corporate-black);
+  --text-secondary: var(--corporate-gray-11);
+  --border-color: rgba(0, 0, 0, 0.15);
+  --card-bg: rgba(201, 203, 204, 0.3); 
+  --input-bg: rgba(255, 255, 255, 0.7);
+}
