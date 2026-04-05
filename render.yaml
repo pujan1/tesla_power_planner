@@ -4,6 +4,7 @@ services:
   # ---------------------------------------------
   - type: web
     name: tesla-api
+    plan: free
     env: node
     buildCommand: "cd backend && npm install"
     startCommand: "cd backend && npm start"
