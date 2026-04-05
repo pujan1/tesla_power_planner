@@ -31,6 +31,21 @@ const userSchema: Schema = new Schema(
       type: String,
       default: 'dark',
     },
+    sites: [
+      {
+        id: { type: String, required: true },
+        name: { type: String, required: true },
+        devices: [
+          {
+            id: { type: String, required: true },
+            type: { type: String, required: true },
+            x: { type: Number, required: true },
+            y: { type: Number, required: true },
+          }
+        ],
+        updatedAt: { type: Date, default: Date.now },
+      }
+    ],
   },
   {
     timestamps: true,

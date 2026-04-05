@@ -59,10 +59,32 @@ const getAllUsers = async () => {
   return userRepository.getAllUsers();
 };
 
+const saveSite = async (username: string, siteData: any) => {
+  if (!siteData.id || !siteData.name || !Array.isArray(siteData.devices)) {
+    throw new ApiError(400, 'Invalid site data');
+  }
+
+  const updatedUser = await userRepository.saveSite(username, siteData);
+  if (!updatedUser) {
+    throw new ApiError(404, 'User not found');
+  }
+  return updatedUser.sites.find((s: any) => s.id === siteData.id);
+};
+
+const getSites = async (username: string) => {
+  const user = await userRepository.getUserByUsername(username);
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+  return user.sites || [];
+};
+
 export default {
   createUser,
   getUserByUsername,
   updateUser,
   loginUser,
-  getAllUsers
+  getAllUsers,
+  saveSite,
+  getSites,
 };

@@ -40,11 +40,23 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   res.json({ count: users.length, users });
 });
 
+const saveSite = catchAsync(async (req: any, res: Response) => {
+  const site = await userService.saveSite(req.user.username, req.body);
+  res.json({ message: 'Site saved successfully', site });
+});
+
+const getSites = catchAsync(async (req: any, res: Response) => {
+  const sites = await userService.getSites(req.user.username);
+  res.json({ count: sites.length, sites });
+});
+
 export default {
   createUser,
   getMe,
   getUser,
   updateUser,
   login,
-  getAllUsers
+  getAllUsers,
+  saveSite,
+  getSites,
 };

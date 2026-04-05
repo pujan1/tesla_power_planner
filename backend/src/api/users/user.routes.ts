@@ -13,5 +13,7 @@ router.put('/users/:username', authenticateToken, userController.updateUser);
 
 router.post('/login', userController.login);
 router.get('/auth/me', authenticateToken, userController.getMe);
+router.post('/auth/sites', authenticateToken, userController.saveSite);
+router.get('/auth/sites', authenticateToken, userController.getSites);
 
 export default router;
