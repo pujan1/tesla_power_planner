@@ -1,11 +1,10 @@
-const express = require('express');
-const config = require('./config');
-const loaders = require('./loaders');
+import express from 'express';
+import config from './config';
+import loaders from './loaders';
 
 async function startServer() {
   const app = express();
 
-  // Initialize loaders (express middlewares, routes, etc.)
   await loaders.init({ expressApp: app });
 
   app.listen(config.port, () => {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User } from './types/user.types';
+import { User } from '@tesla/shared';
 import { MainLayout } from './layouts/MainLayout';
 import { DashboardLayout } from './layouts/DashboardLayout';
 import { Toast } from './components/ui/Toast';

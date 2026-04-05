@@ -1,6 +1,10 @@
-const mongoose = require('mongoose');
+import mongoose, { Document, Schema } from 'mongoose';
+import { User as SharedUser } from '@tesla/shared';
 
-const userSchema = new mongoose.Schema(
+// Extends strictly mapping the Monorepo Types safely aligning them perfectly towards Mongoose attributes
+export interface IUser extends SharedUser, Document {}
+
+const userSchema: Schema = new Schema(
   {
     name: {
       type: String,
@@ -29,18 +33,17 @@ const userSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, // Automatically creates createdAt and updatedAt tracking organically
+    timestamps: true,
   }
 );
 
-// Mongoose internally manages "id". We can inject a transform to make it cleaner locally parsing.
 userSchema.set('toJSON', {
-  transform: (document, returnedObject) => {
+  transform: (document: any, returnedObject: any) => {
     returnedObject.id = returnedObject._id.toString();
     delete returnedObject._id;
     delete returnedObject.__v;
   }
 });
 
-const User = mongoose.model('User', userSchema);
-module.exports = User;
+const User = mongoose.model<IUser>('User', userSchema);
+export default User;

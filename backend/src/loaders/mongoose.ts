@@ -1,8 +1,7 @@
-const mongoose = require('mongoose');
-const config = require('../config');
+import mongoose from 'mongoose';
+import config from '../config';
 
 const init = async () => {
-  // Gracefully prevents crashing out dynamically if URI is missing during frontend deployment testing currently
   if (!config.databaseURL) {
     console.warn('⚠️ No MONGODB_URI found. The database connection was skipped.');
     return;
@@ -17,4 +16,4 @@ const init = async () => {
   }
 };
 
-module.exports = init;
+export default init;

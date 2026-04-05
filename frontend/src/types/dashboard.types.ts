@@ -1,4 +1,4 @@
-import { User } from './user.types';
+import { User } from '@tesla/shared';
 
 export interface UserSettingsDropdownProps {
   currentUser: User;

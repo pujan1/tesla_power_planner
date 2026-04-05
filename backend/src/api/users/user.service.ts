@@ -1,7 +1,7 @@
-const userRepository = require('./user.repository');
-const ApiError = require('../../utils/ApiError');
+import userRepository from './user.repository';
+import ApiError from '../../utils/ApiError';
 
-const createUser = async (userData) => {
+const createUser = async (userData: any) => {
   const { username, password, name } = userData;
 
   if (!username || !password || !name) {
@@ -19,7 +19,7 @@ const createUser = async (userData) => {
   return userRepository.createUser(userData);
 };
 
-const getUserByUsername = async (username) => {
+const getUserByUsername = async (username: string) => {
   const user = await userRepository.getUserByUsername(username);
   if (!user) {
     throw new ApiError(404, 'User not found');
@@ -27,14 +27,13 @@ const getUserByUsername = async (username) => {
   return user;
 };
 
-const updateUser = async (username, updateData) => {
+const updateUser = async (username: string, updateData: any) => {
   const exists = await userRepository.checkUserExists(username);
   if (!exists) {
     throw new ApiError(404, 'User not found');
   }
 
-  // filter out undefined fields
-  const payload = {};
+  const payload: any = {};
   if (updateData.password !== undefined) payload.password = updateData.password;
   if (updateData.name !== undefined) payload.name = updateData.name;
   if (updateData.language !== undefined) payload.language = updateData.language;
@@ -43,7 +42,7 @@ const updateUser = async (username, updateData) => {
   return userRepository.updateUser(username, payload);
 };
 
-const loginUser = async (username, password) => {
+const loginUser = async (username: string, password: string) => {
   const user = await userRepository.getUserByUsername(username);
   if (!user) {
     throw new ApiError(401, 'Invalid username or password');
@@ -60,7 +59,7 @@ const getAllUsers = async () => {
   return userRepository.getAllUsers();
 };
 
-module.exports = {
+export default {
   createUser,
   getUserByUsername,
   updateUser,
