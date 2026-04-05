@@ -1,0 +1,29 @@
+services:
+  # ---------------------------------------------
+  # BACKEND: Express Node API (Web Service)
+  # ---------------------------------------------
+  - type: web
+    name: tesla-api
+    env: node
+    buildCommand: "cd backend && npm install"
+    startCommand: "cd backend && npm start"
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: NODE_ENV
+        value: production
+
+  # ---------------------------------------------
+  # FRONTEND: React Application (Static Site)
+  # ---------------------------------------------
+  - type: web
+    name: tesla-dashboard
+    env: static
+    buildCommand: "cd frontend && npm install && npm run build"
+    staticPublishPath: "./frontend/build"
+    envVars:
+      - key: REACT_APP_API_URL
+        fromService:
+          type: web
+          name: tesla-api
+          envVarKey: RENDER_EXTERNAL_URL
