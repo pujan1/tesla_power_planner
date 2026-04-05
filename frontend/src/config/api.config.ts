@@ -3,6 +3,7 @@ export const API_BASE_URL = process.env.REACT_APP_API_URL ? `${process.env.REACT
 export const API_ENDPOINTS = {
   auth: {
     login: '/login',
+    me: '/auth/me',
   },
   users: {
     create: '/users',

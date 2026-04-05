@@ -5,9 +5,10 @@ export interface User {
     language?: string;
     theme?: string;
 }
-export interface UserResponse {
+export interface AuthResponse {
     message?: string;
     user: User;
+    token: string;
 }
 export interface UsersResponse {
     count: number;

@@ -6,9 +6,10 @@ export interface User {
   theme?: string;
 }
 
-export interface UserResponse {
+export interface AuthResponse {
   message?: string;
   user: User;
+  token: string;
 }
 
 export interface UsersResponse {

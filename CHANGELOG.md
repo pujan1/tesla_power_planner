@@ -4,6 +4,16 @@ All notable changes to the Tesla Full-Stack Ecosystem will be documented in this
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - Authorization & Security Patch
+
+### Added
+- **Stateless JWT Sessions**: Engineered natively signed JSON Web Tokens (`jsonwebtoken`) forcing a rigid 1-hour TTL mathematically across backend generations.
+- **Express Auth Middleware**: Crafted `authMiddleware.ts` algorithmically executing `401 Unauthorized` responses against missing or decayed Tokens dynamically securing arbitrary API fetching.
+- **API Hydration Layer**: Configured `/auth/me` explicitly bridging User reconstructions directly out of JWT execution payloads natively.
+
+### Fixed
+- **Persistent UI Refresh Bug**: Rewrote frontend mapping safely injecting an authentication `useEffect` at the React boundary, routing cached `localStorage` tokens against the hydration endpoint to seamlessly resolve page-reload session losses.
+
 ## [1.0.0] - Initial Enterprise Release
 
 ### Added

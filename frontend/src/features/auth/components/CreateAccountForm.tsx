@@ -19,8 +19,8 @@ export const CreateAccountForm = ({ onCreateSuccess, onSwitchToLogin, onError }:
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await createUser({ username, password, name });
-      onCreateSuccess();
+      const data = await createUser({ username, password, name });
+      onCreateSuccess(data.token);
     } catch (err: any) {
       onError(err.message);
     }

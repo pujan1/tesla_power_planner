@@ -18,11 +18,13 @@ export function useMutation<TData = any, TVariables = any>(
       setLoading(true);
       setError(null);
       try {
+        const token = localStorage.getItem('token');
+        const headers: any = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
           method,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers,
           body: JSON.stringify(variables),
         });
 
@@ -57,7 +59,11 @@ export function useQuery<TData = any>(endpoint: string) {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_BASE_URL}${endpoint}`);
+      const token = localStorage.getItem('token');
+      const headers: any = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, { headers });
       const result = await response.json();
 
       if (!response.ok) {

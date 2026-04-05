@@ -25,7 +25,7 @@ export const LoginForm = ({ onLoginSuccess, onSwitchToCreate, onError }: LoginFo
       if (data.user.language) setLanguage(data.user.language);
       if (data.user.theme) setTheme(data.user.theme);
       
-      onLoginSuccess(data.user);
+      onLoginSuccess(data.user, data.token);
     } catch (err: any) {
       onError(err.message);
     }

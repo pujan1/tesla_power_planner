@@ -18,13 +18,41 @@ function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
 
-  const handleLoginSuccess = (user: User) => {
+  React.useEffect(() => {
+    const hydrateSession = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setIsCheckingSession(false);
+        return;
+      }
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL ? `${process.env.REACT_APP_API_URL}/api` : 'http://localhost:3001/api'}/auth/me`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        if (response.ok && data.user) {
+          setCurrentUser(data.user);
+          setView('DASHBOARD');
+        } else {
+          localStorage.removeItem('token');
+        }
+      } catch (err) {
+        localStorage.removeItem('token');
+      }
+      setIsCheckingSession(false);
+    };
+    hydrateSession();
+  }, []);
+
+  const handleLoginSuccess = (user: User, token?: string) => {
+    if (token) localStorage.setItem('token', token);
     setCurrentUser(user);
     setView('DASHBOARD');
   };
 
-  const handleCreateSuccess = () => {
+  const handleCreateSuccess = (token?: string) => {
     setMessage(t('msg.created'));
     setView('LOGIN');
   };
@@ -40,13 +68,17 @@ function App() {
   };
 
   // Authenticated State Router
+  if (isCheckingSession) {
+    return <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#111', color: '#fff' }}>Loading Session...</div>;
+  }
+
   if (view === 'DASHBOARD' && currentUser) {
     return (
       <DashboardLayout
         navbarContent={
           <UserSettingsDropdown 
             currentUser={currentUser}
-            onLogout={() => { setView('LOGIN'); setCurrentUser(null); clearMessages(); }}
+            onLogout={() => { localStorage.removeItem('token'); setView('LOGIN'); setCurrentUser(null); clearMessages(); }}
             onUpdateSuccess={(user) => { setCurrentUser(user); setMessage(t('msg.updated')); setTimeout(() => setMessage(''), 3000); }}
             onError={handleError}
           />
