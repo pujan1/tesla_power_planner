@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 - **Persistent UI Refresh Bug**: Rewrote frontend mapping safely injecting an authentication `useEffect` at the React boundary, routing cached `localStorage` tokens against the hydration endpoint to seamlessly resolve page-reload session losses.
+- **Render.com Build Failures**: Resolved issue where TypeScript compilation failed on Render due to missing `@types` packages by forcing their installation during the build phase using `--include=dev`.
 
 ## [1.0.0] - Initial Enterprise Release
 
@@ -20,7 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Monorepo Architecture**: Implemented NPM Workspaces linking `frontend`, `backend`, and `@tesla/shared` seamlessly.
 - **Strict TypeScript End-to-End**: Elevated the entire Node/Express backend infrastructure to strictly transpiled TypeScript (`target: ES2022`).
 - **Unified Typings (`@tesla/shared`)**: Created a standalone library securely distributing interfaces logically to both the React UI and the MongoDB Schema, mathematically preventing data disjoints.
-- **Render.com `render.yaml` Configuration**: Designed automated infrastructure-as-code deployment pipelines strictly executing root Monorepo builds mapped directly into decoupled instances.
+- **Render.com `render.yaml` Configuration**: Designed automated infrastructure-as-code deployment pipelines for Monorepo scaling.
 - **MongoDB Atlas Integration**: Injected robust MongoDB connections strictly through `mongoose` natively. Engineered graceful loading so the application skips the database if `MONGODB_URI` drops dynamically without crashing locally.
 - **Repository Documentation**: Added `README.md` justifying database rationalization and established strict AI-guardrail architecture logic inside `.agent_rules.md`.
 

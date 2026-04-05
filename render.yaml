@@ -6,7 +6,7 @@ services:
     name: tesla-api
     plan: free
     env: node
-    buildCommand: "npm install && npm run build -w @tesla/shared && npm run build -w backend"
+    buildCommand: "npm install --include=dev && npm run build -w @tesla/shared && npm run build -w backend"
     startCommand: "npm run start --prefix backend"
     envVars:
       - key: PORT
@@ -20,7 +20,7 @@ services:
   - type: web
     name: tesla-dashboard
     env: static
-    buildCommand: "npm install && npm run build -w @tesla/shared && npm run build -w frontend"
+    buildCommand: "npm install --include=dev && npm run build -w @tesla/shared && npm run build -w frontend"
     staticPublishPath: "./frontend/build"
     envVars:
       - key: REACT_APP_API_URL
