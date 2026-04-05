@@ -56,9 +56,14 @@ const loginUser = async (username, password) => {
   return user;
 };
 
+const getAllUsers = async () => {
+  return userRepository.getAllUsers();
+};
+
 module.exports = {
   createUser,
   getUserByUsername,
   updateUser,
-  loginUser
+  loginUser,
+  getAllUsers
 };

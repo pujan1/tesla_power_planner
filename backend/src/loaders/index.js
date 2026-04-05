@@ -1,9 +1,9 @@
 const expressLoader = require('./express');
+const mongooseLoader = require('./mongoose');
 
 const init = async ({ expressApp }) => {
-  // If we had a database, we would load it here:
-  // await mongooseLoader();
-  // console.log('DB loaded and connected!');
+  await mongooseLoader();
+  console.log('DB loaded and connected!');
 
   await expressLoader({ app: expressApp });
   console.log('Express App loaded!');

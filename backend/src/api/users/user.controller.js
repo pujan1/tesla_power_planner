@@ -21,9 +21,15 @@ const login = catchAsync(async (req, res) => {
   res.json({ message: 'Login successful', user });
 });
 
+const getAllUsers = catchAsync(async (req, res) => {
+  const users = await userService.getAllUsers();
+  res.json({ count: users.length, users });
+});
+
 module.exports = {
   createUser,
   getUser,
   updateUser,
-  login
+  login,
+  getAllUsers
 };

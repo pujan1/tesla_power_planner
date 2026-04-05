@@ -1,28 +1,32 @@
-// In-memory data store for minimal setup currently
-const usersMap = new Map();
+const User = require('./user.model');
 
-// If we need to connect to DB, this is the single file we modify
 const checkUserExists = async (username) => {
-  return usersMap.has(username);
+  const user = await User.findOne({ username });
+  return !!user;
 };
 
 const createUser = async (userData) => {
-  usersMap.set(userData.username, userData);
-  return userData;
+  const newUser = await User.create(userData);
+  return newUser.toJSON();
 };
 
 const getUserByUsername = async (username) => {
-  return usersMap.get(username);
+  const user = await User.findOne({ username });
+  return user ? user.toJSON() : null;
 };
 
 const updateUser = async (username, updateData) => {
-  const existingUser = usersMap.get(username);
-  const updatedUser = {
-    ...existingUser,
-    ...updateData
-  };
-  usersMap.set(username, updatedUser);
-  return updatedUser;
+  const updatedUser = await User.findOneAndUpdate(
+    { username },
+    { $set: updateData },
+    { new: true, runValidators: true }
+  );
+  return updatedUser ? updatedUser.toJSON() : null;
+};
+
+const getAllUsers = async () => {
+  const users = await User.find({});
+  return users.map(user => user.toJSON());
 };
 
 module.exports = {
@@ -30,4 +34,5 @@ module.exports = {
   createUser,
   getUserByUsername,
   updateUser,
+  getAllUsers,
 };
