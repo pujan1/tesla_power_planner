@@ -3,7 +3,7 @@ export type Language = 'en' | 'es' | 'fr';
 export const translations: Record<Language, Record<string, string>> = {
   en: {
     "app.title": "Tesla Portal",
-    "login.welcome": "Welcome Back",
+    "login.welcome": "Please login to configure",
     "login.username": "Username",
     "login.password": "Password",
     "login.btn": "Login",
@@ -56,7 +56,7 @@ export const translations: Record<Language, Record<string, string>> = {
   },
   es: {
     "app.title": "Portal Tesla",
-    "login.welcome": "Bienvenido de nuevo",
+    "login.welcome": "Inicie sesión para configurar",
     "login.username": "Nombre de usuario",
     "login.password": "Contraseña",
     "login.btn": "Iniciar Sesión",
@@ -109,7 +109,7 @@ export const translations: Record<Language, Record<string, string>> = {
   },
   fr: {
     "app.title": "Portail Tesla",
-    "login.welcome": "Content de te revoir",
+    "login.welcome": "Veuillez vous connecter pour configurer",
     "login.username": "Nom d'utilisateur",
     "login.password": "Mot de passe",
     "login.btn": "Connexion",

@@ -1,21 +1,81 @@
-# Tesla Full-Stack Ecosystem
+# Tesla Energy Site Layout Planner
 
-This repository houses a modular, full-stack enterprise web application mimicking high-end aesthetic environments with native Dark/Light mode architecture and dynamic internationalization interfaces. The repository acts as an end-to-end type-safe Monorepo deploying seamlessly to Render.
+An industrial-grade, full-stack application for utility-scale battery deployment planning. This ecosystem enables energy engineers to architect, optimize, and visualize Megapack and Powerpack sites with high-fidelity 2D/3D interfaces and an intelligent hardware packing engine.
 
-## Architecture Highlights
-- **Monorepo (NPM Workspaces):** Natively links `@tesla/shared` seamlessly across backend controllers and frontend hooks without brittle symlinking loops.
-- **Strict TypeScript:** Compiled efficiently out of `backend/` and `frontend/` matching rigid React schemas globally.
-- **Frontend Aesthetic:** Pure CSS Modules (`.module.css`). Clean, vanilla, highly performant without Tailwind dependencies.
-- **AWS Cloud Orchestration**: Uses Render.com `render.yaml` configuration for scaling nodes mechanically via infrastructure-as-code mappings.
+![Site Planner 3D Visualization](docs/assets/3d_view_main.png)
+
+## 🚀 Key Features
+
+- **Intelligent Density Optimization**: Real-time hardware placement using a **First-Fit Packing Algorithm**. This ensures smaller units (like Transformers) automatically fill gaps in larger Megapack rows, maximizing site capacity.
+- **Dual-Mode High-Fidelity UI**: Seamless switching between a technical 2D layout and a high-performance **Three.js 3D View** with industrial dark-mode aesthetics.
+- **Automated Hardware Inventory**: Dynamic cost and energy calculations based on the selected configuration of Megapacks (XL, 2, standard) and Powerpacks.
+- **Globalized Experience (i18n)**: Native support for English, Spanish, and French, ensuring the platform is ready for international energy markets.
+- **Enterprise-Grade Security**: Stateless JWT authentication with persistent session management and secure type-safe Monorepo architecture.
+![Site Config Sidebar](docs/assets/site_planner_ui.png)
+
+## 🎨 Design Language & Aesthetic
+
+The Tesla Energy Site Layout Planner follows a precision-engineered **Industrial Premium** visual identity. Every UI element is designed to minimize cognitive load while maintaining an aesthetic "Wow" factor.
+
+![Tesla Design Language](docs/assets/tesla_design_language.png)
+
+### Core Visual Pillars:
+- **High-Contrast Industrial Dark Mode**: Optimized for long-term engineering focus, using deep #080808 backgrounds with high-legibility #f0f0f0 text.
+- **Precision Typography**: Leveraging clean, geometric sans-serif typefaces (Inter and Roboto) for technical data clarity and hardware inventory readability.
+- **Technical Color Palette**: Strategic use of **Tesla Red** (#E01E35) as a primary accent for critical CTAs and industrial status indicators, alongside a grayscale foundation that reflects structural energy infrastructure.
+- **3D-First Experience**: Using Three.js to provide a seamless transition from abstract design to realistic spatial visualization.
+
+## 🏗️ Technical Architecture
+
+The project is built as an **NPM Workspace Monorepo**, ensuring that the backend (Express) and frontend (React) share a single source of truth for all data models.
+
+- **Monorepo Strategy**: Uses `@tesla/shared` for all data definitions, preventing type discrepancies across the full stack.
+- **Styling**: Pure **CSS Modules** for maximum performance and isolation, avoiding global stylesheet pollution.
+- **Database**: **MongoDB** with Mongoose ORM for a JSON-native, agile development cycle.
+- **Infrastructure**: Automated deployments via **Render.com** mapping the monorepo logic directly to production environments.
+
+## 🛠️ Quick Start (Developer Setup)
+
+Thanks to the automated bootstrap system, you can set up the entire environment with a single command after cloning:
+
+```bash
+# Clone the repo
+git clone https://github.com/pujan1/tesla-energy-planner.git
+cd tesla-energy-planner
+
+# Bootstrap the entire ecosystem (Install + Config + Build + Start)
+npm run bootstrap
+```
+
+This command will:
+1. Install all dependencies across the monorepo.
+2. Seed the backend environment from the `.env.example` template.
+3. Compile the `@tesla/shared` TypeScript definitions.
+4. Launch both the backend and frontend development servers concurrently.
+
+## 🧪 Testing & Reliability
+
+The platform is verified against strict industrial requirements using a dual-tier testing strategy. You can run all suites directly from the project root:
+
+- **Full Suite**: `npm test` runs all unit tests across the monorepo.
+- **Frontend Unit**: `npm run test:frontend` executes React-specific Jest suites for hardware logic.
+- **Backend Unit**: `npm run test:backend` runs Express unit and API endpoint tests (Jest).
+- **E2E Suite**: `npm run test:e2e` executes the full user-flow verification using **Playwright**.
+
+```bash
+# Run all unit tests
+npm test
+
+# Run Playwright E2E suite
+npm run test:e2e
+```
+
+![Packing Optimization Fix](docs/assets/packing_fix.png)
+
+## 🌍 Supported Languages
+- 🇺🇸 English
+- 🇪🇸 Spanish
+- 🇫🇷 French
 
 ---
-
-## Technical Decision: Why MongoDB?
-
-When architecting the persistent data layer, we deliberately chose MongoDB alongside Mongoose ORM over a traditional Relational Database (like PostgreSQL). Here is the fundamental rationale behind this architectural choice:
-
-1. **JSON-Native Synergy**: Our entire stack (React -> Node.js -> DB) organically speaks JSON. MongoDB maps documents exactly identically to Javascript objects. We completely bypassed the need to execute rigid formatting pipelines or complex SQL mapping integrations, inherently preventing bugs right at the boundary layer.
-2. **Speed of Delivery & Iteration**: Non-relational mapping radically reduces raw engineering time. There are no massive `knex` or Prisma Schema migration files to debug every time we add a single parameter (like a `theme` preference). It enables extremely agile, rapid development cycles. 
-3. **Mid-Tier Scaling Mechanics**: At a theoretical active scale of **100,000 concurrent users**, the physical read/write throughput discrepancy between Postgres and Mongo is practically irrelevant—both engines handle this capacity effortlessly. However, what *does* matter is code maintainability and engineering burn rate. MongoDB significantly drops the engineering cost overhead required to construct and debug the data schema at this stage.
-
-*Note: While MongoDB is the optimal, cost-effective engine for our current velocity, we acknowledge that if the platform aggressively scales out towards hundreds of millions of highly-normalized active users, transitioning aspects of the ledger to a strict relational structure will be formally reevaluated.*
+© 2026 Tesla Energy UI Engineering. All rights reserved.

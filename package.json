@@ -10,7 +10,11 @@
   "main": "index.js",
   "scripts": {
     "start": "concurrently \"npm run dev --prefix backend\" \"npm run start --prefix frontend\"",
-    "bootstrap": "npm install && cp backend/.env.example backend/.env || true && npm run build -w @tesla/shared && npm start"
+    "bootstrap": "npm install && cp backend/.env.example backend/.env || true && npm run build -w @tesla/shared && npm start",
+    "test": "npm test --workspaces --if-present",
+    "test:frontend": "npm test -w frontend",
+    "test:backend": "npm test -w backend",
+    "test:e2e": "npx playwright test --config e2e/playwright.config.ts"
   },
   "keywords": [],
   "author": "",
