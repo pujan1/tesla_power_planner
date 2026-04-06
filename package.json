@@ -9,7 +9,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"npm run dev --prefix backend\" \"npm run start --prefix frontend\""
+    "start": "concurrently \"npm run dev --prefix backend\" \"npm run start --prefix frontend\"",
+    "bootstrap": "npm install && cp backend/.env.example backend/.env || true && npm run build -w @tesla/shared && npm start"
   },
   "keywords": [],
   "author": "",
