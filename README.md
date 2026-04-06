@@ -11,7 +11,6 @@ An industrial-grade, full-stack application for utility-scale battery deployment
 - **Automated Hardware Inventory**: Dynamic cost and energy calculations based on the selected configuration of Megapacks (XL, 2, standard) and Powerpacks.
 - **Globalized Experience (i18n)**: Native support for English, Spanish, and French, ensuring the platform is ready for international energy markets.
 - **Enterprise-Grade Security**: Stateless JWT authentication with persistent session management and secure type-safe Monorepo architecture.
-![Site Config Sidebar](docs/assets/site_planner_ui.png)
 
 ## 🎨 Design Language & Aesthetic
 
@@ -70,12 +69,44 @@ npm test
 npm run test:e2e
 ```
 
-![Packing Optimization Fix](docs/assets/packing_fix.png)
-
 ## 🌍 Supported Languages
 - 🇺🇸 English
 - 🇪🇸 Spanish
 - 🇫🇷 French
+
+## 🔗 Live Deployment
+The latest production build is accessible at:
+[**https://tesla-dashboard-lqcu.onrender.com/**](https://tesla-dashboard-lqcu.onrender.com/)
+
+---
+
+## ⚠️ Known Issues & Engineering Constraints
+
+While the platform is highly stable for layout planning, we are tracking the following technical limitations:
+
+### 1. 3D Viewport Artifacts
+- **Clipping**: Minor Z-fighting and geometry clipping occur in the 3D viewer, particularly near the road/concrete boundary when viewing from extreme low angles.
+- **Dark Mode Contrast**: The 3D scene lighting in "Night" mode currently results in a very high-contrast shadow profile that can obscure device labels in deep shadows.
+
+### 2. Manual Mode Constraints
+- **100ft Width Safety**: While the auto-arrange engine strictly adheres to the default 100ft site width, entering **Manual Edit Mode** allows engineers to exceed this boundary for custom logistical requirements. This can result in a "Warning" state in the sidebar if not manually balanced.
+
+### 3. Device Responsiveness
+- **Mobile 3D Viewer**: The Three.js canvas is currently optimized for desktop performance. Users on smaller mobile devices may experience lower frame rates (FPS) and simplified gesture controls in the 3D Tab.
+
+---
+
+## 🚀 Future Enhancements & Roadmap
+
+We are continuously evolving the site planner ecosystem with upcoming professional features:
+
+### 1. Advanced Analytics & Audit Dashboard
+- **Engagement Tracking**: Implementation of an audit event system to track user clicks, session durations, and click-through rates (CTR) on hardware inventory items.
+- **Design Telemetry**: An analytics dashboard for sales teams to visualize common site configurations and popular hardware mixes.
+
+### 2. Immersive 3D Editing
+- **Interactive Scene**: Transitioning the 3D viewer from a read-only visualizer to a full interactive canvas. This will allow engineers to add, arrange, and delete Megapacks directly within the 3D environment.
+- **Aesthetic Refinements**: Collaborating with UI/UX teams to finalize the industrial color palette and lighting models for a more accurate digital twin appearance.
 
 ---
 © 2026 Tesla Energy UI Engineering. All rights reserved.

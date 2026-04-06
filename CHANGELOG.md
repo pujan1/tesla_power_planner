@@ -24,7 +24,6 @@ All format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [1.4.0] - 2026-04-06 - Thin Components, Thick Helpers & Global Documentation
 
-
 ### Added
 - **Domain-Driven Helpers**: Extracted pure business logic into dedicated helper modules (`packing.helpers.ts`, `site-planner.helpers.ts`, `scene.helpers.ts`).
 - **Canvas Texture Utilities**: Centralized 3D texture generation into `canvas-texture.utils.ts` to eliminate redundancy in `BatteryMesh` and `ParkingMarker`.
