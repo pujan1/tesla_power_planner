@@ -157,6 +157,120 @@
   margin-top: 1rem;
 }
 
+.editActions {
+  margin-top: 1.5rem;
+}
+
+.editBtn {
+  width: 100%;
+  padding: 1rem;
+  background: transparent;
+  border: 1px solid #3e94ff;
+  color: #3e94ff;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.editBtn:hover:not(:disabled) {
+  background: rgba(62, 148, 255, 0.1);
+  box-shadow: 0 5px 15px rgba(62, 148, 255, 0.2);
+}
+
+.editBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  border-color: var(--text-secondary);
+  color: var(--text-secondary);
+}
+
+.manualActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.saveManualBtn {
+  width: 100%;
+  padding: 1rem;
+  background: #3e94ff;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.saveManualBtn:hover {
+  background: #2a7fef;
+  box-shadow: 0 10px 20px rgba(62, 148, 255, 0.3);
+}
+
+.cancelManualBtn {
+  width: 100%;
+  padding: 1rem;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelManualBtn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.revertBtn, .autoArrangeBtn {
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.revertBtn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.revertBtn:hover {
+  background: rgba(231, 76, 60, 0.1);
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
+
+.autoArrangeBtn {
+  background: rgba(62, 148, 255, 0.05);
+  border: 1px dashed #3e94ff;
+  color: #3e94ff;
+}
+
+.autoArrangeBtn:hover {
+  background: rgba(62, 148, 255, 0.15);
+  box-shadow: 0 5px 15px rgba(62, 148, 255, 0.1);
+}
+
+.primaryActions {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+.primaryActions button {
+  flex: 1;
+}
+
+
+
 .statCard {
   padding: 1.2rem;
   background: var(--card-bg);

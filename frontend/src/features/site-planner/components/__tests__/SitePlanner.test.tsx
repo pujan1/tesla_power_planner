@@ -49,6 +49,8 @@ describe('SitePlanner Auto-Save', () => {
       },
       updateCount: mockUpdateCount,
       devices: [{ id: '1', type: DeviceType.MEGAPACK_XL, x: 0, y: 0 }],
+      isManualMode: false,
+      setIsManualMode: jest.fn(),
       stats: {
         totalCost: 0,
         totalEnergy: 0,
@@ -58,6 +60,8 @@ describe('SitePlanner Auto-Save', () => {
         totalArea: 10000,
       },
     });
+
+
   });
 
   afterEach(() => {

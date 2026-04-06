@@ -7,10 +7,11 @@
 import { renderHook, act } from '@testing-library/react';
 import { useSitePlanner } from '../useSitePlanner';
 import { DeviceType } from '@tesla/shared';
+import { SitePlannerProvider } from '../../context/SitePlannerContext';
 
 describe('useSitePlanner Packing Optimization', () => {
   it('should optimize 4 Megapacks and 2 Transformers into 2 rows', () => {
-    const { result } = renderHook(() => useSitePlanner());
+    const { result } = renderHook(() => useSitePlanner(), { wrapper: SitePlannerProvider });
     
     act(() => {
       // 4 Megapacks (30ft each)
@@ -44,7 +45,7 @@ describe('useSitePlanner Packing Optimization', () => {
   });
 
   it('should fill gaps in earlier rows with smaller units (First-Fit)', () => {
-    const { result } = renderHook(() => useSitePlanner());
+    const { result } = renderHook(() => useSitePlanner(), { wrapper: SitePlannerProvider });
     
     act(() => {
       // Megapack (30ft)

@@ -1,8 +1,10 @@
-import { useMemo, useState, useCallback } from 'react';
-import { DeviceType } from '@tesla/shared';
+import { useMemo, useState, useCallback, useEffect } from 'react';
+import { DeviceType, SiteDevice } from '@tesla/shared';
 
 import { DeviceCounts } from '../types/site-planner.types';
 import { packDevices, computeSiteStats } from '../helpers/packing.helpers';
+import { useSitePlannerContext } from '../context/SitePlannerContext';
+
 
 /**
  * Core state management hook for the site planner.
@@ -30,6 +32,15 @@ export const useSitePlanner = () => {
     [DeviceType.POWERPACK]: 0,
   });
 
+  const { isManualMode, setIsManualMode } = useSitePlannerContext();
+  const [manualDevices, setManualDevices] = useState<SiteDevice[]>([]);
+
+  const [originalManualLayout, setOriginalManualLayout] = useState<SiteDevice[]>([]);
+  const [hasCustomLayout, setHasCustomLayout] = useState(false);
+
+
+
+
   /**
    * Updates the count for a specific battery device type.
    * Clamps the value to a minimum of 0.
@@ -39,7 +50,99 @@ export const useSitePlanner = () => {
    */
   const updateCount = useCallback((type: keyof DeviceCounts, count: number) => {
     setCounts(prev => ({ ...prev, [type]: Math.max(0, count) }));
+    setHasCustomLayout(false); // Reset to auto if counts change manually via sidebar
+    setIsManualMode(false);
   }, []);
+
+
+  /**
+   * Toggles manual editing mode.
+   * Copies current auto-packed positions to manual state when entering.
+   */
+  const toggleManualMode = useCallback((active: boolean, initialDevices?: SiteDevice[]) => {
+    if (active && initialDevices) {
+      setManualDevices([...initialDevices]);
+      setOriginalManualLayout([...initialDevices]);
+      setHasCustomLayout(true);
+    }
+    setIsManualMode(active);
+  }, []);
+
+
+  /**
+   * Reverts manual layout to its state when the edit session began.
+   */
+  const revertManualLayout = useCallback(() => {
+    setManualDevices([...originalManualLayout]);
+  }, [originalManualLayout]);
+
+  /**
+   * Resets manual layout to a clean auto-packed arrangement.
+   */
+  const autoArrangeLayout = useCallback(() => {
+    const batteryList: DeviceType[] = [];
+    Object.entries(counts).forEach(([type, count]) => {
+      for (let i = 0; i < count; i++) {
+        batteryList.push(type as DeviceType);
+      }
+    });
+
+    const totalBatteries = batteryList.length;
+    const transformerCount = Math.ceil(totalBatteries / 2);
+    const allDevicesToPack: DeviceType[] = [...batteryList];
+    for (let i = 0; i < transformerCount; i++) {
+      allDevicesToPack.push(DeviceType.TRANSFORMER);
+    }
+
+    setManualDevices(packDevices(allDevicesToPack));
+  }, [counts]);
+
+  /**
+   * Appends a new device to the layout manual.
+   * Increments the global device counts as well.
+   */
+  const addManualDevice = useCallback((type: DeviceType, x: number, y: number) => {
+    // 1. Update count (if it's a battery)
+    if (type !== DeviceType.TRANSFORMER) {
+      setCounts(prev => ({ ...prev, [type]: prev[type as keyof DeviceCounts] + 1 }));
+    }
+
+    // 2. Add to manualDevices with a unique ID
+    const newId = `${type}-${Date.now()}`;
+    setManualDevices(prev => [...prev, { id: newId, type, x, y }]);
+  }, []);
+
+  /**
+   * Removes a specific device from the manual layout.
+   * Decrements corresponding global counts if it's a battery.
+   */
+  const removeManualDevice = useCallback((id: string) => {
+    const target = manualDevices.find(d => d.id === id);
+    if (!target) return;
+
+    // 1. Decrement count (if it's a battery)
+    if (target.type !== DeviceType.TRANSFORMER) {
+      setCounts(prev => ({ 
+        ...prev, 
+        [target.type as keyof DeviceCounts]: Math.max(0, prev[target.type as keyof DeviceCounts] - 1) 
+      }));
+    }
+
+    // 2. Remove from manualDevices
+    setManualDevices(prev => prev.filter(d => d.id !== id));
+  }, [manualDevices]);
+
+
+
+  /**
+   * Updates the position of a specific device in manual mode.
+   */
+  const updateDevicePosition = useCallback((id: string, x: number, y: number) => {
+    setManualDevices(prev => 
+      prev.map(d => d.id === id ? { ...d, x, y } : d)
+    );
+  }, []);
+
 
   const { devices, stats } = useMemo(() => {
     // Expand counts into an ordered list of battery device types
@@ -60,15 +163,35 @@ export const useSitePlanner = () => {
     }
 
     const packedDevices = packDevices(allDevicesToPack);
-    const stats = computeSiteStats(packedDevices, totalBatteries, transformerCount);
+    const resolvedDevices = hasCustomLayout ? manualDevices : packedDevices;
 
-    return { devices: packedDevices, stats };
-  }, [counts]);
+    const stats = computeSiteStats(
+      resolvedDevices, 
+      totalBatteries, 
+      transformerCount
+    );
+    
+    return { 
+      devices: resolvedDevices, 
+      stats 
+    };
+  }, [counts, isManualMode, manualDevices, hasCustomLayout]);
+
 
   return {
     counts,
     updateCount,
+    toggleManualMode,
+    updateDevicePosition,
+    revertManualLayout,
+    autoArrangeLayout,
+    addManualDevice,
+    removeManualDevice,
+    setHasCustomLayout,
     devices,
+
     stats,
+    isManualMode,
+    hasCustomLayout,
   };
 };

@@ -22,6 +22,14 @@
   color: white;
 }
 
+.warning {
+  background: rgba(255, 172, 51, 0.95);
+  color: #111; /* Better legibility on orange */
+  box-shadow: 0 10px 30px rgba(255, 172, 51, 0.3);
+  font-weight: 500;
+}
+
+
 @keyframes slideInToast {
   from { opacity: 0; transform: translate(-50%, -10px); }
   to { opacity: 1; transform: translate(-50%, 0); }

@@ -11,22 +11,25 @@ import styles from '../styles/ViewToggle.module.css';
  */
 export const ViewToggle = () => {
   const { t } = useLanguage();
-  const { is3D, setIs3D } = useSitePlannerContext();
+  const { is3D, setIs3D, isManualMode } = useSitePlannerContext();
 
   return (
-    <div className={styles.headerToggle}>
+    <div className={`${styles.headerToggle} ${isManualMode ? styles.disabled : ''}`}>
       <button 
         className={`${styles.toggleBtn} ${!is3D ? styles.active : ''}`}
-        onClick={() => setIs3D(false)}
+        onClick={() => !isManualMode && setIs3D(false)}
+        disabled={isManualMode}
       >
         {t('view.2d')}
       </button>
       <button 
         className={`${styles.toggleBtn} ${is3D ? styles.active : ''}`}
-        onClick={() => setIs3D(true)}
+        onClick={() => !isManualMode && setIs3D(true)}
+        disabled={isManualMode}
       >
         {t('view.3d')}
       </button>
     </div>
   );
 };
+

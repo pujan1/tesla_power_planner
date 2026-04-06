@@ -7,10 +7,11 @@
 import { renderHook, act } from '@testing-library/react';
 import { useSitePlanner } from '../useSitePlanner';
 import { DeviceType } from '@tesla/shared';
+import { SitePlannerProvider } from '../../context/SitePlannerContext';
 
 describe('useSitePlanner hook', () => {
   it('should initialize with zero counts', () => {
-    const { result } = renderHook(() => useSitePlanner());
+    const { result } = renderHook(() => useSitePlanner(), { wrapper: SitePlannerProvider });
     
     expect(result.current.counts[DeviceType.MEGAPACK_XL]).toBe(0);
     expect(result.current.devices.length).toBe(0);
@@ -18,7 +19,7 @@ describe('useSitePlanner hook', () => {
   });
 
   it('should update device counts correctly', () => {
-    const { result } = renderHook(() => useSitePlanner());
+    const { result } = renderHook(() => useSitePlanner(), { wrapper: SitePlannerProvider });
     
     act(() => {
       result.current.updateCount(DeviceType.MEGAPACK_XL, 5);
@@ -32,7 +33,7 @@ describe('useSitePlanner hook', () => {
   });
 
   it('should enforce 10ft safety gaps in layout packing', () => {
-    const { result } = renderHook(() => useSitePlanner());
+    const { result } = renderHook(() => useSitePlanner(), { wrapper: SitePlannerProvider });
     
     act(() => {
       // Megapack XL width is 40ft
@@ -51,7 +52,7 @@ describe('useSitePlanner hook', () => {
   });
 
   it('should start a new row when exceeding 100ft width', () => {
-    const { result } = renderHook(() => useSitePlanner());
+    const { result } = renderHook(() => useSitePlanner(), { wrapper: SitePlannerProvider });
     
     act(() => {
       // 3 XL Megapacks = 40+10 + 40+10 + 40 = 140 (Exceeds 100)
@@ -70,7 +71,7 @@ describe('useSitePlanner hook', () => {
   });
 
   it('should calculate statistics correctly', () => {
-    const { result } = renderHook(() => useSitePlanner());
+    const { result } = renderHook(() => useSitePlanner(), { wrapper: SitePlannerProvider });
     
     act(() => {
       result.current.updateCount(DeviceType.POWERPACK, 1);

@@ -11,8 +11,11 @@ import { User, SiteLayout } from '@tesla/shared';
 import { DEVICE_PROPERTIES } from '../constants/device.constants';
 import { DeviceCounts } from '../types/site-planner.types';
 import { useSitePlannerContext } from '../context/SitePlannerContext';
-import { canAddDevices, buildSitePayload, parseSiteLayoutToCounts } from '../helpers/site-planner.helpers';
+import { canAddDevices, buildSitePayload, parseSiteLayoutToCounts, isLayoutManual } from '../helpers/site-planner.helpers';
+import { checkIntersections } from '../helpers/validation.helpers';
 import styles from '../styles/SitePlanner.module.css';
+
+
 
 /**
  * Main site planner component. Provides:
@@ -26,11 +29,31 @@ import styles from '../styles/SitePlanner.module.css';
 export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
   const { t } = useLanguage();
   const { is3D } = useSitePlannerContext();
-  const { counts, updateCount, devices, stats } = useSitePlanner();
+  const { 
+    counts, 
+    updateCount, 
+    devices, 
+    stats, 
+    isManualMode,
+    toggleManualMode,
+    updateDevicePosition,
+    revertManualLayout,
+    autoArrangeLayout,
+    addManualDevice,
+    removeManualDevice,
+    hasCustomLayout
+  } = useSitePlanner();
+
+
+
 
   const [showSalesModal, setShowSalesModal] = useState(false);
   const [lastSafeCounts, setLastSafeCounts] = useState<DeviceCounts | null>(null);
   const [showAutoSaveToast, setShowAutoSaveToast] = useState(false);
+  const [showManualWarning, setShowManualWarning] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+
 
 
   const { mutate: saveSite, loading: saving } = useMutation(API_ENDPOINTS.auth.me.replace('/auth/me', '/auth/sites'), 'POST');
@@ -81,7 +104,8 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
    * Automatically persists the current device layout to the backend with a debounce.
    */
   useEffect(() => {
-    if (devices.length === 0) return;
+    // Disable auto-save during manual editing to prevent inconsistencies
+    if (devices.length === 0 || isManualMode) return;
     
     const timeoutId = setTimeout(async () => {
       try {
@@ -94,7 +118,8 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
     }, 2000);
 
     return () => clearTimeout(timeoutId);
-  }, [devices, saveSite]);
+  }, [devices, saveSite, isManualMode]);
+
 
 
 
@@ -106,15 +131,61 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
     try {
       const result = await getSites();
       if (result?.sites?.length) {
-        const restoredCounts = parseSiteLayoutToCounts(result.sites[0]);
+        const layout = result.sites[0];
+        const restoredCounts = parseSiteLayoutToCounts(layout);
+
+        // Update counts first
         (Object.entries(restoredCounts) as [keyof DeviceCounts, number][]).forEach(([type, count]) => {
           updateCount(type, count);
         });
+
+        // If the layout is manual, restore its devices and flag it as custom
+        if (isLayoutManual(layout.devices, restoredCounts)) {
+          toggleManualMode(false, layout.devices);
+        }
       }
     } catch (err) {
       console.error('Failed to load sites', err);
     }
-  }, [getSites, updateCount]);
+  }, [getSites, updateCount, toggleManualMode]);
+
+  useEffect(() => {
+    if (isManualMode) {
+      setShowManualWarning(true);
+      const timer = setTimeout(() => setShowManualWarning(false), 7000);
+      return () => clearTimeout(timer);
+    }
+  }, [isManualMode]);
+
+
+
+  const handleEditToggle = () => {
+    if (!isManualMode) {
+      toggleManualMode(true, devices);
+    }
+  };
+
+  const handleSaveManual = async () => {
+    // Check if there are intersections before saving
+    const invalidIds = checkIntersections(devices);
+    if (invalidIds.size > 0) {
+      setSaveError(t('site.invalidLayout') || 'The layout is invalid. Please ensure no devices overlap before saving.');
+      return;
+    }
+
+
+    try {
+      await saveSite(buildSitePayload(devices));
+      toggleManualMode(false);
+    } catch (err) {
+      console.error('Failed to save manual layout:', err);
+    }
+  };
+
+  const handleCancelManual = () => {
+    toggleManualMode(false);
+  };
+
 
   useEffect(() => {
     loadLatestSite();
@@ -134,17 +205,52 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
           {t('site.config')}
         </h3>
 
-        <div className={styles.deviceControls}>
-          {(Object.keys(counts) as (keyof DeviceCounts)[]).map((type) => (
-            <DeviceInput
-              key={type}
-              type={type}
-              count={counts[type]}
-              onUpdate={handleUpdateCount}
-              t={t}
-            />
-          ))}
+        {!isManualMode && (
+          <div className={styles.deviceControls}>
+            {(Object.keys(counts) as (keyof DeviceCounts)[]).map((type) => (
+              <DeviceInput
+                key={type}
+                type={type}
+                count={counts[type]}
+                onUpdate={handleUpdateCount}
+                t={t}
+                disabled={isManualMode}
+              />
+            ))}
+          </div>
+        )}
+
+
+        <div className={styles.editActions}>
+          {!isManualMode ? (
+            <button 
+              className={styles.editBtn} 
+              onClick={handleEditToggle}
+              disabled={is3D}
+            >
+              {t('site.editLayout') || 'Edit Layout'}
+            </button>
+          ) : (
+            <div className={styles.manualActions}>
+              <button className={styles.revertBtn} onClick={revertManualLayout}>
+                {t('site.revertLayout') || 'Revert'}
+              </button>
+              <button className={styles.autoArrangeBtn} onClick={autoArrangeLayout}>
+                {t('site.autoArrange') || 'Auto Arrange'}
+              </button>
+              <div className={styles.primaryActions}>
+                <button className={styles.saveManualBtn} onClick={handleSaveManual}>
+                  {t('site.saveLayout') || 'Save Layout'}
+                </button>
+                <button className={styles.cancelManualBtn} onClick={handleCancelManual}>
+                  {t('common.cancel') || 'Cancel'}
+                </button>
+              </div>
+            </div>
+          )}
+
         </div>
+
 
 
         <div className={styles.statsSection} aria-live="polite" aria-label="Site Statistics">
@@ -173,6 +279,7 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
         </div>
 
 
+
         {showAutoSaveToast && (
           <Toast 
             message={t('site.saving')} 
@@ -181,14 +288,44 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
           />
         )}
 
-      </aside>
+        {showManualWarning && (
+          <Toast 
+            message={t('site.manualWarning')} 
+            type="warning"
+            onClose={() => setShowManualWarning(false)}
+            duration={7000}
+          />
+        )}
 
+        {saveError && (
+          <Toast 
+            message={saveError} 
+            type="error"
+            onClose={() => setSaveError(null)}
+          />
+        )}
+
+
+      </aside>
 
       {is3D ? (
         <SiteCanvas3D devices={devices} dimensions={stats.dimensions} />
       ) : (
-        <SiteCanvas devices={devices} dimensions={stats.dimensions} is3D={is3D} />
+        <SiteCanvas 
+          devices={devices} 
+          dimensions={stats.dimensions} 
+          is3D={is3D} 
+          isManualMode={isManualMode}
+          onUpdatePosition={updateDevicePosition}
+          onRevert={revertManualLayout}
+          onAutoArrange={autoArrangeLayout}
+          onAddDevice={addManualDevice}
+          onRemoveDevice={removeManualDevice}
+        />
+
+
       )}
+
 
       {showSalesModal && (
         <SalesModal 
@@ -204,12 +341,14 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
  * Custom number input with +/- steppers and local string state management.
  * Fixes the "sticky zero" bug and provides a premium Tesla-like feel.
  */
-const DeviceInput = ({ type, count, onUpdate, t }: { 
+const DeviceInput = ({ type, count, onUpdate, t, disabled }: { 
   type: keyof DeviceCounts, 
   count: number, 
   onUpdate: (type: keyof DeviceCounts, val: number) => void,
-  t: (key: string) => string 
+  t: (key: string) => string,
+  disabled?: boolean
 }) => {
+
   const [localVal, setLocalVal] = useState(count.toString());
 
   // Sync local value if count is updated externally (e.g. session load)
@@ -254,6 +393,7 @@ const DeviceInput = ({ type, count, onUpdate, t }: {
           className={styles.stepBtn} 
           onClick={() => handleStep(-1)}
           aria-label={`Decrease ${t(`device.${type.toLowerCase()}`)}`}
+          disabled={disabled}
         >
           -
         </button>
@@ -266,15 +406,18 @@ const DeviceInput = ({ type, count, onUpdate, t }: {
           data-testid={`device-input-${type.toLowerCase()}`}
           aria-label={`${t(`device.${type.toLowerCase()}`)} count`}
           placeholder="0"
+          disabled={disabled}
         />
         <button 
           className={styles.stepBtn} 
           onClick={() => handleStep(1)}
           aria-label={`Increase ${t(`device.${type.toLowerCase()}`)}`}
+          disabled={disabled}
         >
           +
         </button>
       </div>
+
     </div>
   );
 };

@@ -4,7 +4,26 @@ All notable changes to the Tesla Full-Stack Ecosystem will be documented in this
 
 All format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-04-06 - Interactive 2D Layout Editor & Safety Controls
+
+### Added
+- **Manual Layout Engine**: Engineered a state-driven 2D manipulation system allowing granular, high-precision placement of Megapacks and Transformers.
+- **Drag-to-Delete Trash Bin**: Implemented a red-pulsing glassmorphic deletion zone with persistent discovery opacity (40% idle, 100% active).
+- **Stationary Device Palette**: Designed a floating, viewport-anchored device selector that remains fixed regardless of canvas zoom or scroll depth.
+- **Safety Toast Notifications**: Replaced legacy browser `alert()` calls with high-visibility, localized Error Toasts for intersection and boundary validation.
+- **Manual Mode Warning**: Integrated a 7-second localized safety toast (EN/ES/FR) advising users when standard 100ft layout limits are suspended.
+
+### Changed
+- **Synchronized View Locking**: Migrated manual edit state to `SitePlannerContext`, enabling a global UI lock that disables the 2D/3D toggle during active editing.
+- **Viewport Decoupling**: Refactored `SiteCanvas` with a dedicated `viewportWrapper` to isolate floating UI controls from the scrollable workspace flow.
+- **Persistence Suspension**: Automatically gated the auto-save sequence during active manual edit sessions to prevent intermediate data corruption.
+
+### Fixed
+- **Canvas Layout Regressions**: Resolved a styling conflict where absolutely positioned controls were shifting the workspace flex-flow out of the viewable area.
+- **Test Provider Coverage**: Updated 26 unit and integration tests to wrap and support the new global context provider architecture.
+
 ## [1.4.0] - 2026-04-06 - Thin Components, Thick Helpers & Global Documentation
+
 
 ### Added
 - **Domain-Driven Helpers**: Extracted pure business logic into dedicated helper modules (`packing.helpers.ts`, `site-planner.helpers.ts`, `scene.helpers.ts`).

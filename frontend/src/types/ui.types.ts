@@ -10,7 +10,8 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 
 export interface ToastProps {
   message: string;
-  type?: 'success' | 'error';
+  type?: 'success' | 'error' | 'warning';
+
   duration?: number;
   onClose?: () => void;
 }

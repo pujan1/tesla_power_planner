@@ -3,7 +3,10 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 interface SitePlannerContextType {
   is3D: boolean;
   setIs3D: (value: boolean) => void;
+  isManualMode: boolean;
+  setIsManualMode: (value: boolean) => void;
 }
+
 
 const SitePlannerContext = createContext<SitePlannerContextType | undefined>(undefined);
 
@@ -14,13 +17,15 @@ const SitePlannerContext = createContext<SitePlannerContextType | undefined>(und
  */
 export const SitePlannerProvider = ({ children }: { children: ReactNode }) => {
   const [is3D, setIs3D] = useState(false);
+  const [isManualMode, setIsManualMode] = useState(false);
 
   return (
-    <SitePlannerContext.Provider value={{ is3D, setIs3D }}>
+    <SitePlannerContext.Provider value={{ is3D, setIs3D, isManualMode, setIsManualMode }}>
       {children}
     </SitePlannerContext.Provider>
   );
 };
+
 
 /**
  * Hook to access the site planner's global UI state (`is3D`, `setIs3D`).
