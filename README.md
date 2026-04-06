@@ -30,12 +30,28 @@ The Tesla Energy Site Layout Planner follows a precision-engineered **Industrial
 
 ## 🏗️ Technical Architecture
 
-The project is built as an **NPM Workspace Monorepo**, ensuring that the backend (Express) and frontend (React) share a single source of truth for all data models.
+The platform is architected as an **NPM Workspace Monorepo** with a clear separation of concerns between frontend, backend, and shared logic. This provides a single source of truth for energy hardware models and business rules.
 
-- **Monorepo Strategy**: Uses `@tesla/shared` for all data definitions, preventing type discrepancies across the full stack.
-- **Styling**: Pure **CSS Modules** for maximum performance and isolation, avoiding global stylesheet pollution.
-- **Database**: **MongoDB** with Mongoose ORM for a JSON-native, agile development cycle.
-- **Infrastructure**: Automated deployments via **Render.com** mapping the monorepo logic directly to production environments.
+![Full-Stack Architecture Illustration](docs/assets/full_stack.png)
+
+### Core Architectural Layers:
+
+- **Monorepo Strategy (`@tesla/shared`)**: All hardware definitions (Megapack types, costs, dimensions) are centralized in a shared TypeScript layer. Any change to a device property is instantly reflected in both the backend validation and the frontend rendering.
+- **Frontend Layer (React & Three.js)**:
+  - **UI Components**: Modular components for the `SitePlanner`, `Canvas`, and `Sidebar` provide a responsive interface.
+  - **Application State**: Managed via the `useSitePlanner` hook, which orchestrates the packing logic, device counts, and statistics.
+  - **Logic & Helpers**: Decoupled modules handle the **First-Fit Packing Algorithm**, real-time stats calculation, and geometry validation.
+  - **Context Layer**: `SitePlannerContext` manages global UI state such as 2D/3D mode toggling.
+  - **Data Layer**: Clean API interaction using custom `useApi` hooks for backend synchronization and layout persistence.
+- **Backend Layer (Express & Node.js)**: A robust RESTful API with dedicated services for authentication, site storage, and user management.
+- **Persistence Layer (MongoDB)**: Mongoose-based data modeling to handle highly flexible site configuration data.
+
+![Frontend Component Flow Diagram](docs/assets/frontEnd.png)
+
+### Design & Implementation Patterns:
+- **Styling**: Strict **CSS Modules** for isolated, high-performance styling without global namespace pollution.
+- **Validation**: Shared geometric logic ensures that any hardware placement is valid and safe within the industrial constraints.
+- **Infrastructure**: Automated deployment pipelines on **Render.com** mapping the monorepo workspace logic to final production artifacts.
 
 ## 🛠️ Quick Start (Developer Setup)
 
