@@ -18,7 +18,7 @@ describe('UserService Unit Tests', () => {
       (userRepository.createUser as jest.Mock).mockResolvedValue({ 
         ...userData, 
         language: 'en', 
-        theme: 'dark' 
+        theme: 'light' 
       });
 
       const result = await userService.createUser(userData);

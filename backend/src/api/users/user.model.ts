@@ -29,7 +29,7 @@ const userSchema: Schema = new Schema(
     },
     theme: {
       type: String,
-      default: 'dark',
+      default: 'light',
     },
     sites: [
       {

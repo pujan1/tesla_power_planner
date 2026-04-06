@@ -32,7 +32,7 @@ export const useTheme = () => {
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [theme, setThemeState] = useState<Theme>(() => {
     const saved = localStorage.getItem('theme') as Theme;
-    return saved || 'dark';
+    return saved || 'light';
   });
 
   const setTheme = (t: Theme) => {

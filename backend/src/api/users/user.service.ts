@@ -14,7 +14,7 @@ const createUser = async (userData: any) => {
   }
 
   userData.language = 'en';
-  userData.theme = 'dark';
+  userData.theme = 'light';
 
   return userRepository.createUser(userData);
 };
