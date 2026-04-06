@@ -88,8 +88,8 @@ function App() {
             </div>
           }
         >
-          {message && <Toast message={message} type="success" />}
-          {error && <Toast message={error} type="error" />}
+          {message && <Toast message={message} type="success" onClose={clearMessages} />}
+          {error && <Toast message={error} type="error" onClose={clearMessages} />}
           <DashboardView currentUser={currentUser} />
         </DashboardLayout>
       </SitePlannerProvider>
@@ -99,8 +99,8 @@ function App() {
   // ── Unauthenticated View ──
   return (
     <MainLayout>
-      {message && <Toast message={message} type="success" />}
-      {error && <Toast message={error} type="error" />}
+      {message && <Toast message={message} type="success" onClose={clearMessages} />}
+      {error && <Toast message={error} type="error" onClose={clearMessages} />}
 
       <HeroVideo>
         {view === 'LOGIN' && (
