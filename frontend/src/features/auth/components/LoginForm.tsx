@@ -32,7 +32,7 @@ export const LoginForm = ({ onLoginSuccess, onSwitchToCreate, onError }: LoginFo
   };
 
   return (
-    <form className={styles.form} onSubmit={handleLogin}>
+    <form className={styles.form} onSubmit={handleLogin} data-testid="login-form">
       <h2>{t('login.welcome')}</h2>
       <Input
         type="text"
@@ -40,6 +40,7 @@ export const LoginForm = ({ onLoginSuccess, onSwitchToCreate, onError }: LoginFo
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         required
+        data-testid="login-username"
       />
       <Input
         type="password"
@@ -47,8 +48,9 @@ export const LoginForm = ({ onLoginSuccess, onSwitchToCreate, onError }: LoginFo
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
+        data-testid="login-password"
       />
-      <Button type="submit" disabled={loading}>
+      <Button type="submit" disabled={loading} data-testid="login-submit">
         {loading ? '...' : t('login.btn')}
       </Button>
       <p className={styles.switchText}>

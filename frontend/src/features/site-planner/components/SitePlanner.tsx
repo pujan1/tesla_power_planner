@@ -77,6 +77,7 @@ export const SitePlanner: React.FC = () => {
                 min="0"
                 value={counts[type as keyof DeviceCounts]}
                 onChange={(e) => updateCount(type as keyof DeviceCounts, parseInt(e.target.value) || 0)}
+                data-testid={`device-input-${type.toLowerCase()}`}
               />
             </div>
           ))}
@@ -111,6 +112,7 @@ export const SitePlanner: React.FC = () => {
           className={styles.saveBtn}
           onClick={handleSave}
           disabled={saving}
+          data-testid="save-layout-btn"
         >
           {saving ? t('site.saving') : t('site.save')}
         </button>

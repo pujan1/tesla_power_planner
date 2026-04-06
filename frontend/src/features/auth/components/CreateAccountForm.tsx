@@ -27,30 +27,33 @@ export const CreateAccountForm = ({ onCreateSuccess, onSwitchToLogin, onError }:
   };
 
   return (
-    <form className={styles.form} onSubmit={handleCreate}>
+    <form className={styles.form} onSubmit={handleCreate} data-testid="signup-form">
       <h2>{t('create.title')}</h2>
-      <Input 
-        type="text" 
-        placeholder={t('create.fullName')} 
-        value={name} 
-        onChange={(e) => setName(e.target.value)} 
-        required 
+      <Input
+        type="text"
+        placeholder={t('create.fullName')}
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        required
+        data-testid="signup-fullname"
       />
-      <Input 
-        type="text" 
-        placeholder={t('login.username')} 
-        value={username} 
-        onChange={(e) => setUsername(e.target.value)} 
-        required 
+      <Input
+        type="text"
+        placeholder={t('login.username')}
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        required
+        data-testid="signup-username"
       />
-      <Input 
-        type="password" 
-        placeholder={t('login.password')} 
-        value={password} 
-        onChange={(e) => setPassword(e.target.value)} 
-        required 
+      <Input
+        type="password"
+        placeholder={t('login.password')}
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+        data-testid="signup-password"
       />
-      <Button type="submit" disabled={loading}>
+      <Button type="submit" disabled={loading} data-testid="signup-submit">
         {loading ? '...' : t('create.btn')}
       </Button>
       <p className={styles.switchText}>
