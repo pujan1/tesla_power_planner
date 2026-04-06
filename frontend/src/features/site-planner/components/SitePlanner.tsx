@@ -4,7 +4,9 @@ import { useSitePlanner } from '../hooks/useSitePlanner';
 import { SiteCanvas } from './SiteCanvas';
 import { SiteCanvas3D } from './SiteCanvas3D';
 import { SalesModal } from './SalesModal';
+import { SubmissionSuccess } from './SubmissionSuccess';
 import { Toast } from '../../../components/ui/Toast';
+
 import { useMutation, useQuery } from '../../../hooks/useApi';
 import { API_ENDPOINTS } from '../../../config/api.config';
 import { User, SiteLayout } from '@tesla/shared';
@@ -52,6 +54,8 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
   const [showAutoSaveToast, setShowAutoSaveToast] = useState(false);
   const [showManualWarning, setShowManualWarning] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
 
 
 
@@ -223,14 +227,23 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
 
         <div className={styles.editActions}>
           {!isManualMode ? (
-            <button 
-              className={styles.editBtn} 
-              onClick={handleEditToggle}
-              disabled={is3D}
-            >
-              {t('site.editLayout') || 'Edit Layout'}
-            </button>
+            <>
+              <button 
+                className={styles.editBtn} 
+                onClick={handleEditToggle}
+                disabled={is3D}
+              >
+                {t('site.editLayout') || 'Edit Layout'}
+              </button>
+              <button 
+                className={styles.submitConfigBtn} 
+                onClick={() => setIsSubmitted(true)}
+              >
+                {t('site.submitConfig') || 'Submit Configuration'}
+              </button>
+            </>
           ) : (
+
             <div className={styles.manualActions}>
               <button className={styles.revertBtn} onClick={revertManualLayout}>
                 {t('site.revertLayout') || 'Revert'}
@@ -333,9 +346,14 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
           onSubmit={handleSalesSubmit} 
         />
       )}
+
+      {isSubmitted && (
+        <SubmissionSuccess onBack={() => setIsSubmitted(false)} />
+      )}
     </div>
   );
 };
+
 
 /**
  * Custom number input with +/- steppers and local string state management.

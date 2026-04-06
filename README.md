@@ -103,10 +103,22 @@ We are continuously evolving the site planner ecosystem with upcoming profession
 ### 1. Advanced Analytics & Audit Dashboard
 - **Engagement Tracking**: Implementation of an audit event system to track user clicks, session durations, and click-through rates (CTR) on hardware inventory items.
 - **Design Telemetry**: An analytics dashboard for sales teams to visualize common site configurations and popular hardware mixes.
+- **Multi-site Configuration**: Supporting the creation, storage, and management of multiple site deployments within a single enterprise dashboard.
+
 
 ### 2. Immersive 3D Editing
 - **Interactive Scene**: Transitioning the 3D viewer from a read-only visualizer to a full interactive canvas. This will allow engineers to add, arrange, and delete Megapacks directly within the 3D environment.
 - **Aesthetic Refinements**: Collaborating with UI/UX teams to finalize the industrial color palette and lighting models for a more accurate digital twin appearance.
+
+### 3. Technical Debt & Hardening
+- **Enhanced Test Coverage**: Increasing unit and integration test coverage across the core site-planner hooks and packing algorithms to approach 100% reliability for edge-case hardware mixes.
+- **Comprehensive E2E Workflows**: Implementing additional Playwright E2E scenarios to verify complex user journeys, including multi-device manual layouts, persistence validation, and internationalization state persistence.
+
+### 4. Design System & Component Standardization
+- **Universal Component Library**: Developing a centralized, industrial-grade UI library (Inputs, Buttons, Modals) to enforce a cohesive Tesla aesthetic. This will eliminate existing component fragmentation and ensure a consistent high-fidelity experience across all sales and engineering modules.
+- **Themed Design Tokens**: Transitioning to a strict design-token system for colors, typography, and spacing to further streamline theme-aware development and rapid prototyping.
+
+
 
 ---
 © 2026 Tesla Energy UI Engineering. All rights reserved.

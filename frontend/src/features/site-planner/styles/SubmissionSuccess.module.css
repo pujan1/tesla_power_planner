@@ -1,0 +1,81 @@
+.splashOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(8, 8, 8, 0.95);
+  backdrop-filter: blur(20px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.5s ease;
+}
+
+.splashContent {
+  text-align: center;
+  max-width: 600px;
+  padding: 3rem;
+}
+
+.successIcon {
+  width: 80px;
+  height: 80px;
+  background: #E01E35;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  margin: 0 auto 2rem;
+  box-shadow: 0 0 40px rgba(224, 30, 53, 0.4);
+  animation: scaleIn 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  color: #f0f0f0;
+  letter-spacing: -0.02em;
+}
+
+.message {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: #aaa;
+  margin-bottom: 3rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+}
+
+.backBtn {
+  font-size: 1rem;
+  padding: 1rem 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: #f0f0f0;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.backBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}

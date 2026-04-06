@@ -161,21 +161,42 @@
   margin-top: 1.5rem;
 }
 
-.editBtn {
+.editBtn, .submitConfigBtn {
   width: 100%;
-  padding: 1rem;
-  background: transparent;
-  border: 1px solid #3e94ff;
-  color: #3e94ff;
-  border-radius: 8px;
-  font-weight: 600;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #f0f0f0;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 3rem;
 }
 
-.editBtn:hover:not(:disabled) {
-  background: rgba(62, 148, 255, 0.1);
-  box-shadow: 0 5px 15px rgba(62, 148, 255, 0.2);
+.editBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.submitConfigBtn {
+  background: #E01E35;
+  border-color: #E01E35;
+  color: white;
+  margin-top: 1rem;
+  margin-bottom: 0px;
+  box-shadow: 0 10px 20px rgba(224, 30, 53, 0.2);
+}
+
+.submitConfigBtn:hover {
+  background: #ff2b41;
+  border-color: #ff2b41;
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(224, 30, 53, 0.3);
 }
 
 .editBtn:disabled {

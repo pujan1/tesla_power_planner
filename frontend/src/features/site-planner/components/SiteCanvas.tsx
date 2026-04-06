@@ -191,16 +191,16 @@ export const SiteCanvas = ({
               onTouchStart={() => handlePaletteStart(type)}
             >
               <div 
-                className={styles.paletteIcon} 
-                style={{ '--grad': DEVICE_PROPERTIES[type].cost > 1000000 ? 'linear-gradient(135deg, #cc0000, #990000)' : 'linear-gradient(135deg, #444, #222)' } as any}
+                className={`${styles.paletteIcon} ${styles[type.toLowerCase()]}`}
               >
-                {type[0]}
+                {type === DeviceType.MEGAPACK_XL ? 'XL' : type[0]}
               </div>
               <span>{t(`device.${type.toLowerCase()}`)}</span>
             </div>
           ))}
         </div>
       )}
+
 
       {isManualMode && (
         <div 

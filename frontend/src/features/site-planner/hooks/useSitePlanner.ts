@@ -98,39 +98,75 @@ export const useSitePlanner = () => {
   }, [counts]);
 
   /**
-   * Appends a new device to the layout manual.
-   * Increments the global device counts as well.
+   * Automatically synchronizes transformer counts with battery deployment.
+   * Requirement: 1 Transformer per 4 Megapacks OR 16 Powerpacks (weighted).
+   */
+  const syncTransformers = useCallback((currentDevices: SiteDevice[]) => {
+    const megapacks = currentDevices.filter(d => 
+      d.type === DeviceType.MEGAPACK_XL || 
+      d.type === DeviceType.MEGAPACK_2 || 
+      d.type === DeviceType.MEGAPACK
+    ).length;
+    const powerpacks = currentDevices.filter(d => d.type === DeviceType.POWERPACK).length;
+    const required = Math.ceil(megapacks / 4 + powerpacks / 16);
+    
+    const existingTransformers = currentDevices.filter(d => d.type === DeviceType.TRANSFORMER);
+    const existingCount = existingTransformers.length;
+
+    if (existingCount < required) {
+      // Add missing transformer at bottom right of current bounds
+      const maxX = Math.max(...currentDevices.map(d => d.x), 50);
+      const maxY = Math.max(...currentDevices.map(d => d.y), 0);
+      const newId = `${DeviceType.TRANSFORMER}-${Date.now()}`;
+      return [...currentDevices, { id: newId, type: DeviceType.TRANSFORMER, x: maxX + 10, y: maxY }];
+    } else if (existingCount > required) {
+      // Remove excess transformer (last one added)
+      const lastTransformer = existingTransformers[existingCount - 1];
+      return currentDevices.filter(d => d.id !== lastTransformer.id);
+    }
+    return currentDevices;
+  }, []);
+
+
+  /**
+   * Appends a new battery to the layout manual.
+   * Increments the global device counts and triggers transformer sync.
    */
   const addManualDevice = useCallback((type: DeviceType, x: number, y: number) => {
-    // 1. Update count (if it's a battery)
-    if (type !== DeviceType.TRANSFORMER) {
-      setCounts(prev => ({ ...prev, [type]: prev[type as keyof DeviceCounts] + 1 }));
-    }
+    if (type === DeviceType.TRANSFORMER) return; // Prevent manual transformer addition
 
-    // 2. Add to manualDevices with a unique ID
+    // 1. Update count
+    setCounts(prev => ({ ...prev, [type]: prev[type as keyof DeviceCounts] + 1 }));
+
+    // 2. Add battery + Sync Transformers
     const newId = `${type}-${Date.now()}`;
-    setManualDevices(prev => [...prev, { id: newId, type, x, y }]);
-  }, []);
+    setManualDevices(prev => {
+      const nextDevices = [...prev, { id: newId, type, x, y }];
+      return syncTransformers(nextDevices);
+    });
+  }, [syncTransformers]);
 
   /**
    * Removes a specific device from the manual layout.
-   * Decrements corresponding global counts if it's a battery.
+   * Decrements corresponding global counts and triggers transformer sync.
    */
   const removeManualDevice = useCallback((id: string) => {
     const target = manualDevices.find(d => d.id === id);
-    if (!target) return;
+    if (!target || target.type === DeviceType.TRANSFORMER) return; // Block manual removal of transformers
 
-    // 1. Decrement count (if it's a battery)
-    if (target.type !== DeviceType.TRANSFORMER) {
-      setCounts(prev => ({ 
-        ...prev, 
-        [target.type as keyof DeviceCounts]: Math.max(0, prev[target.type as keyof DeviceCounts] - 1) 
-      }));
-    }
+    // 1. Decrement count
+    setCounts(prev => ({ 
+      ...prev, 
+      [target.type as keyof DeviceCounts]: Math.max(0, prev[target.type as keyof DeviceCounts] - 1) 
+    }));
 
-    // 2. Remove from manualDevices
-    setManualDevices(prev => prev.filter(d => d.id !== id));
-  }, [manualDevices]);
+    // 2. Remove battery + Sync Transformers
+    setManualDevices(prev => {
+      const nextDevices = prev.filter(d => d.id !== id);
+      return syncTransformers(nextDevices);
+    });
+  }, [manualDevices, syncTransformers]);
+
 
 
 
@@ -153,8 +189,14 @@ export const useSitePlanner = () => {
       }
     });
 
-    const totalBatteries = batteryList.length;
-    const transformerCount = Math.ceil(totalBatteries / 2);
+    const megapacks = batteryList.filter(type => 
+      type === DeviceType.MEGAPACK_XL || 
+      type === DeviceType.MEGAPACK_2 || 
+      type === DeviceType.MEGAPACK
+    ).length;
+    const powerpacks = batteryList.filter(type => type === DeviceType.POWERPACK).length;
+    const transformerCount = Math.ceil(megapacks / 4 + powerpacks / 16);
+
 
     // Append auto-generated transformers
     const allDevicesToPack: DeviceType[] = [...batteryList];
@@ -167,9 +209,10 @@ export const useSitePlanner = () => {
 
     const stats = computeSiteStats(
       resolvedDevices, 
-      totalBatteries, 
+      batteryList.length, 
       transformerCount
     );
+
     
     return { 
       devices: resolvedDevices, 

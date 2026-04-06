@@ -20,16 +20,15 @@ describe('useSitePlanner Packing Optimization', () => {
 
     const devices = result.current.devices;
     
-    // Total batteries = 4, so Transformers = ceil(4/2) = 2
+    // Total batteries = 4, so Transformers = ceil(4/4) = 1
     expect(result.current.stats.batteryCount).toBe(4);
-    expect(result.current.stats.transformerCount).toBe(2);
-    expect(devices.length).toBe(6);
+    expect(result.current.stats.transformerCount).toBe(1);
+    expect(result.current.devices.length).toBe(5);
 
     // Filter by type
     const mps = devices.filter(d => d.type === DeviceType.MEGAPACK);
     const trs = devices.filter(d => d.type === DeviceType.TRANSFORMER);
 
-    // Row 1 (y=0): MP1, MP2, TR1, TR2
     // MP1: x=0, MP2: x=40, TR1: x=80, TR2: x=90
     // Row 2 (y=20): MP3, MP4
     // MP3: x=0, MP4: x=40
@@ -39,10 +38,11 @@ describe('useSitePlanner Packing Optimization', () => {
     // BUG REPRODUCTION: Currently this might be 3 rows
     expect(rowOffsets.length).toBeLessThanOrEqual(2);
     
-    // Verify that the 2nd Transformer is NOT on a 3rd row
-    const lastTR = trs[1];
-    expect(lastTR.y).toBeLessThan(40); // 40 would be Row 3 (0 + 20 + 20)
+    // Verify that the Transformer is on Row 1 (y=0)
+    const firstTR = trs[0];
+    expect(firstTR.y).toBe(0);
   });
+
 
   it('should fill gaps in earlier rows with smaller units (First-Fit)', () => {
     const { result } = renderHook(() => useSitePlanner(), { wrapper: SitePlannerProvider });

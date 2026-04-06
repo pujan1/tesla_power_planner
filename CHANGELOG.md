@@ -8,10 +8,11 @@ All format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 - **Manual Layout Engine**: Engineered a state-driven 2D manipulation system allowing granular, high-precision placement of Megapacks and Transformers.
-- **Drag-to-Delete Trash Bin**: Implemented a red-pulsing glassmorphic deletion zone with persistent discovery opacity (40% idle, 100% active).
-- **Stationary Device Palette**: Designed a floating, viewport-anchored device selector that remains fixed regardless of canvas zoom or scroll depth.
+- **Automated Transformer Management**: Implemented a system-governed transformer sync using industrial ratios (1:4 for Megapacks, 1:16 for Powerpacks). Transformers are auto-provisioned or removed based on battery inventory changes.
+- **Drag-to-Delete Trash Bin**: Overhauled the deletion zone with a subtle idle state (20% opacity) and a high-contrast Tesla Red (#E01E35) pulsing active state.
+- **Color-Coded Device Palette**: Refined the floating selector with device-specific gradients (Tesla Red for Megapack XL, Slate for others) and premium interaction micro-animations.
 - **Safety Toast Notifications**: Replaced legacy browser `alert()` calls with high-visibility, localized Error Toasts for intersection and boundary validation.
-- **Manual Mode Warning**: Integrated a 7-second localized safety toast (EN/ES/FR) advising users when standard 100ft layout limits are suspended.
+- **Manual Mode Warning**: Integrated a 7-second localized safety toast advising users when standard 100ft layout limits are suspended.
 
 ### Changed
 - **Synchronized View Locking**: Migrated manual edit state to `SitePlannerContext`, enabling a global UI lock that disables the 2D/3D toggle during active editing.
@@ -19,8 +20,11 @@ All format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Persistence Suspension**: Automatically gated the auto-save sequence during active manual edit sessions to prevent intermediate data corruption.
 
 ### Fixed
+- **Transformer Sync Consistency**: Resolved a bug where transformers were not automatically recalculating in manual mode. 
+- **Protected Device Removal**: Fixed a logic flaw by explicitly blocking the manual removal or addition of system-managed transformer units.
 - **Canvas Layout Regressions**: Resolved a styling conflict where absolutely positioned controls were shifting the workspace flex-flow out of the viewable area.
 - **Test Provider Coverage**: Updated 26 unit and integration tests to wrap and support the new global context provider architecture.
+
 
 ## [1.4.0] - 2026-04-06 - Thin Components, Thick Helpers & Global Documentation
 

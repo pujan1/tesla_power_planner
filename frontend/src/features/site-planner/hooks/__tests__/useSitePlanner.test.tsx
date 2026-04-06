@@ -27,9 +27,10 @@ describe('useSitePlanner hook', () => {
 
     expect(result.current.counts[DeviceType.MEGAPACK_XL]).toBe(5);
     expect(result.current.stats.batteryCount).toBe(5);
-    // 5 batteries = 3 transformers (ceil(5/2))
-    expect(result.current.stats.transformerCount).toBe(3);
-    expect(result.current.devices.length).toBe(8); // 5 batteries + 3 transformers
+    // 5 megapacks = 2 transformers (ceil(5/4))
+    expect(result.current.stats.transformerCount).toBe(2);
+    expect(result.current.devices.length).toBe(7); // 5 batteries + 2 transformers
+
   });
 
   it('should enforce 10ft safety gaps in layout packing', () => {
