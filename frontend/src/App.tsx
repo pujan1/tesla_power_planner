@@ -10,7 +10,9 @@ import { SitePlannerProvider } from './features/site-planner/context/SitePlanner
 import { HeroVideo } from './features/landing/components/HeroVideo';
 import { ViewToggle } from './features/site-planner/components/ViewToggle';
 import { useLanguage } from './context/LanguageContext';
+import { useTheme } from './context/ThemeContext';
 import { useAuth } from './hooks/useAuth';
+
 
 /**
  * Root application component. Acts as a top-level router that switches
@@ -37,10 +39,28 @@ function App() {
     hydrateSession,
   } = useAuth(t);
 
+  const { theme, setTheme } = useTheme();
+
+  const lastSyncedUserRef = React.useRef<string | null>(null);
+
   /** Hydrate session from localStorage on mount. */
   useEffect(() => {
     hydrateSession();
   }, [hydrateSession]);
+
+  /** Sync theme from user object once hydrated or on login. */
+  useEffect(() => {
+    if (currentUser && lastSyncedUserRef.current !== currentUser.username) {
+      if (currentUser.theme) {
+        setTheme(currentUser.theme as any);
+      }
+      lastSyncedUserRef.current = currentUser.username;
+    } else if (!currentUser) {
+      lastSyncedUserRef.current = null;
+    }
+  }, [currentUser, setTheme]);
+
+
 
   // Loading state while checking for an existing session
   if (isCheckingSession) {

@@ -36,19 +36,19 @@ export const SiteCanvas = ({ devices, dimensions, is3D }: SiteCanvasProps) => {
 
   return (
     <div className={styles.canvasContainer}>
-      <div 
+      <div
         className={`${styles.layoutCanvas} ${is3D ? styles.is3D : ''}`}
-        style={{ 
-          width: Math.max(canvasWidth, 100 * SCALE), 
+        style={{
+          width: Math.max(canvasWidth, 100 * SCALE),
           height: Math.max(canvasHeight, 40 * SCALE),
           padding: `${GUTTER * SCALE}px`,
-          '--limit-label': `"${t('site.limit')}"`
         } as any}
+
       >
         {devices.map((device: SiteDevice) => {
           const props = DEVICE_PROPERTIES[device.type as keyof typeof DEVICE_PROPERTIES];
           return (
-            <div 
+            <div
               key={device.id}
               className={`${styles.deviceBlock} ${styles[device.type.toLowerCase()]} ${is3D ? styles.is3DMode : ''}`}
               style={{

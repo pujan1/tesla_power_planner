@@ -4,6 +4,7 @@ import styles from './TeslaHeader.module.css';
  * Global header component displaying the Tesla wordmark SVG logo.
  *
  * Used in the unauthenticated `MainLayout` across all landing pages.
+ * grabbed this from tesla website
  *
  * @returns A `<header>` element with the Tesla logo.
  */

@@ -41,23 +41,7 @@
 }
 
 
-.layoutCanvas::after {
-  content: 'SITE 100FT LIMIT';
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  border-right: 2px dashed rgba(204, 0, 0, 0.3);
-  display: flex;
-  align-items: center;
-  padding-right: 5px;
-  color: rgba(204, 0, 0, 0.4);
-  font-size: 0.6rem;
-  letter-spacing: 2px;
-  writing-mode: vertical-rl;
-  pointer-events: none;
-}
+
 
 .is3D {
   transform: rotateX(60deg) rotateZ(-40deg) translateY(-50px) translateZ(50px);

@@ -10,18 +10,12 @@ export const THEME_COLORS = {
     gravel: '#121212',
     concrete: '#222222',
     road: '#050505',
-    gridSection: '#444444',
-    gridCell: '#262626',
-    gridFine: '#1a1a1a',
   },
   light: {
     bg: '#f0f0f0',
     gravel: '#b8b8b8',
     concrete: '#d0d0d0',
     road: '#333333',
-    gridSection: '#888888',
-    gridCell: '#cccccc',
-    gridFine: '#eeeeee',
   },
 } as const;
 

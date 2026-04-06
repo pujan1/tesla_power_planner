@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera, Grid, Environment, ContactShadows } from '@react-three/drei';
+import { OrbitControls, PerspectiveCamera, Environment, ContactShadows } from '@react-three/drei';
 import { SiteDevice } from '@tesla/shared';
 import { BatteryMesh } from './BatteryMesh';
 import { ParkingMarker } from './ParkingMarker';
@@ -44,34 +44,34 @@ export const SiteCanvas3D = ({ devices, dimensions }: SiteCanvas3DProps) => {
   const envPreset = isDark ? 'night' : 'city';
 
   return (
-    <div 
-      className={styles.canvas3DHolder} 
+    <div
+      className={styles.canvas3DHolder}
       style={{ background: colors.bg }}
       role="img"
       aria-label="3D Energy Site Layout Visualization"
       aria-description={`Technical visualization of the site layout. Dimensions: ${dimensions.width}ft by ${dimensions.length}ft. Contains ${devices.length} hardware units including Megapacks and Transformers.`}
     >
       <Canvas shadows gl={{ antialias: true, logarithmicDepthBuffer: true }}>
-        <PerspectiveCamera 
-          makeDefault 
-          position={[viewTarget[0] + 120, 100, viewTarget[2] + 120]} 
-          fov={CAMERA_DEFAULTS.fov} 
+        <PerspectiveCamera
+          makeDefault
+          position={[viewTarget[0] + 120, 100, viewTarget[2] + 120]}
+          fov={CAMERA_DEFAULTS.fov}
         />
-        <OrbitControls 
+        <OrbitControls
           target={viewTarget}
-          enableDamping 
+          enableDamping
           dampingFactor={CAMERA_DEFAULTS.dampingFactor}
-          maxPolarAngle={CAMERA_DEFAULTS.maxPolarAngle} 
+          maxPolarAngle={CAMERA_DEFAULTS.maxPolarAngle}
           minDistance={CAMERA_DEFAULTS.minDistance}
           maxDistance={CAMERA_DEFAULTS.maxDistance}
         />
 
         {/* Global Lighting */}
         <ambientLight intensity={lighting.ambient} />
-        <directionalLight 
-          position={[100, 200, 100]} 
-          intensity={lighting.directional} 
-          castShadow 
+        <directionalLight
+          position={[100, 200, 100]}
+          intensity={lighting.directional}
+          castShadow
           shadow-mapSize={SHADOW_MAP_SIZE}
         />
         {isDark && (
@@ -82,25 +82,7 @@ export const SiteCanvas3D = ({ devices, dimensions }: SiteCanvas3DProps) => {
           />
         )}
 
-        {/* Triple-Tier Technical Grid */}
-        <Grid 
-          args={[4000, 4000]} 
-          sectionColor={colors.gridSection} 
-          cellColor={colors.gridCell} 
-          sectionSize={100} 
-          cellSize={10} 
-          infiniteGrid 
-          fadeDistance={2000}
-        />
-        <Grid 
-          args={[dimensions.width + 200, dimensions.length + 300]} 
-          sectionColor={colors.gridSection} 
-          cellColor={colors.gridFine} 
-          sectionSize={10} 
-          cellSize={2} 
-          position={[dimensions.width / 2, 0.005, (dimensions.length + 100) / 2]} 
-          infiniteGrid={false}
-        />
+
 
         {/* Site Foundation: Gravel Base */}
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[dimensions.width / 2, -0.05, (dimensions.length + 100) / 2]} receiveShadow>
@@ -111,10 +93,10 @@ export const SiteCanvas3D = ({ devices, dimensions }: SiteCanvas3DProps) => {
         {/* Access Road (Asphalt Strip) */}
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[dimensions.width / 2, 0.1, dimensions.length + 65]} receiveShadow>
           <planeGeometry args={[dimensions.width + 200, ROAD_CONSTANTS.width]} />
-          <meshStandardMaterial 
-            color={colors.road} 
-            roughness={0.7} 
-            metalness={0.2} 
+          <meshStandardMaterial
+            color={colors.road}
+            roughness={0.7}
+            metalness={0.2}
             polygonOffset
             polygonOffsetFactor={-1}
           />
@@ -125,7 +107,7 @@ export const SiteCanvas3D = ({ devices, dimensions }: SiteCanvas3DProps) => {
           {Array.from({ length: Math.floor((dimensions.width + 200) / ROAD_CONSTANTS.laneMarkingSpacing) }).map((_, i) => (
             <mesh key={i} rotation={[-Math.PI / 2, 0, 0]} position={[i * ROAD_CONSTANTS.laneMarkingSpacing - 80, 0, 0]}>
               <planeGeometry args={[ROAD_CONSTANTS.laneMarkingWidth, ROAD_CONSTANTS.laneMarkingHeight]} />
-              <meshBasicMaterial color="white" opacity={0.8} transparent />
+              <meshBasicMaterial color="Grey" opacity={0.8} transparent />
             </mesh>
           ))}
         </group>
@@ -148,14 +130,14 @@ export const SiteCanvas3D = ({ devices, dimensions }: SiteCanvas3DProps) => {
           {devices.map((device: SiteDevice) => {
             const props = DEVICE_PROPERTIES[device.type as keyof typeof DEVICE_PROPERTIES];
             const height = DEVICE_HEIGHTS[device.type as keyof typeof DEVICE_HEIGHTS] || 10;
-            
+
             return (
               <BatteryMesh
                 key={device.id}
                 type={device.type}
                 position={[
-                  device.x + props.width / 2, 
-                  height / 2, 
+                  device.x + props.width / 2,
+                  height / 2,
                   device.y + props.length / 2
                 ]}
                 args={[props.width, height, props.length]}

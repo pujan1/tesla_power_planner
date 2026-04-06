@@ -8,7 +8,7 @@ interface HeroVideoProps {
 
 /**
  * Full-viewport hero section with a looping background video.
- *
+ * Obtained from official tesla webstore
  * Displays the Tesla Megapack promotional video with overlay text
  * (title, subtitle, config detail) and a slot for auth forms.
  *
@@ -17,20 +17,20 @@ interface HeroVideoProps {
  */
 export const HeroVideo = ({ children }: HeroVideoProps) => {
   const { t } = useLanguage();
-  
+
   return (
     <div className={styles.heroContainer}>
-      <video 
-        autoPlay 
-        muted 
-        loop 
-        playsInline 
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
         className={styles.videoBackground}
         poster="https://digitalassets.tesla.com/tesla-contents/image/upload/f_auto,q_auto:best/Megapack-Hero-Desktop.jpg"
       >
-        <source 
-          src="https://digitalassets.tesla.com/tesla-contents/video/upload/f_auto,q_auto:best/v1759521034/Megapack_Hero_Desktop_V6.mp4" 
-          type="video/mp4" 
+        <source
+          src="https://digitalassets.tesla.com/tesla-contents/video/upload/f_auto,q_auto:best/v1759521034/Megapack_Hero_Desktop_V6.mp4"
+          type="video/mp4"
         />
       </video>
 
@@ -41,7 +41,7 @@ export const HeroVideo = ({ children }: HeroVideoProps) => {
             {t('landing.description') || 'Large-Scale Energy Storage'}
           </p>
           <div className={styles.configDetail}>
-             {t('landing.configDetail') || 'Megapack Config - Your one page to configure solutions for all your battery needs'}
+            {t('landing.configDetail') || 'Megapack Config - Your one page to configure solutions for all your battery needs'}
           </div>
         </div>
 

@@ -24,16 +24,10 @@ export const ParkingMarker = ({ offset }: ParkingMarkerProps) => {
 
   return (
     <>
-      {/* Rectangular Bay Surface (Spot) */}
-      <mesh position={[offset, -0.01, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[16, 30]} />
-        <meshBasicMaterial color="white" opacity={0.05} transparent />
-      </mesh>
-
       {/* Bay Border (Solid Industrial Frame) */}
       <Line
         points={[[-8, 0, -15], [8, 0, -15], [8, 0, 15], [-8, 0, 15], [-8, 0, -15]]}
-        color="white"
+        color="grey"
         lineWidth={3}
         position={[offset, 0, 0]}
         opacity={1.0}

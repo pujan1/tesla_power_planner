@@ -30,20 +30,19 @@ export const useTheme = () => {
  * @param props.children - Child components that can consume theme context.
  */
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setThemeState] = useState<Theme>('dark');
+  const [theme, setThemeState] = useState<Theme>(() => {
+    const saved = localStorage.getItem('theme') as Theme;
+    return saved || 'dark';
+  });
 
   const setTheme = (t: Theme) => {
     setThemeState(t);
+    localStorage.setItem('theme', t);
   };
 
   useEffect(() => {
     document.body.className = `theme-${theme}`;
   }, [theme]);
-
-  // Initial setup for body class
-  useEffect(() => {
-    document.body.className = 'theme-dark';
-  }, []);
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
@@ -51,3 +50,4 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     </ThemeContext.Provider>
   );
 };
+
