@@ -34,44 +34,57 @@ export const useSitePlanner = () => {
     }
 
     const packedDevices: SiteDevice[] = [];
-    let currentX = 0;
-    let currentY = 0;
-    let maxRowHeight = 0;
+    const rows: { y: number; height: number; currentX: number }[] = [];
     const MAX_WIDTH = 100;
 
     allDevicesToPack.forEach((type, index) => {
       const props = DEVICE_PROPERTIES[type];
       
-      // If adding this device exceeds 100ft, start a new row
-      if (currentX + props.width > MAX_WIDTH) {
-        currentX = 0;
-        currentY += maxRowHeight + 10; // 10ft safety gap between rows
-        maxRowHeight = 0;
+      // Find the first row where this device fits horizontally
+      let targetRow = rows.find(r => r.currentX + props.width <= MAX_WIDTH);
+      
+      if (!targetRow) {
+        // Start a new row below the last one
+        const lastRow = rows[rows.length - 1];
+        const newY = lastRow ? lastRow.y + lastRow.height + 10 : 0;
+        
+        targetRow = {
+          y: newY,
+          height: props.length,
+          currentX: 0
+        };
+        rows.push(targetRow);
+      } else {
+        // If the NEW device is taller than current row max, we'd technically need to shift 
+        // subsequent rows. But since all current equipment is 10ft, we'll keep it simple:
+        targetRow.height = Math.max(targetRow.height, props.length);
       }
 
       packedDevices.push({
         id: `${type}-${index}`,
         type,
-        x: currentX,
-        y: currentY,
+        x: targetRow.currentX,
+        y: targetRow.y,
       });
 
-      currentX += props.width + 10; // 10ft safety gap between hardware units
-      maxRowHeight = Math.max(maxRowHeight, props.length);
+      targetRow.currentX += props.width + 10;
     });
 
-    // Calculate stats
+    // Calculate stats based on actual packed bounds
     let totalCost = 0;
     let totalEnergy = 0;
     let maxWidthUsed = 0;
-    let totalLengthUsed = currentY + maxRowHeight;
+    let maxHeightUsed = 0;
 
     packedDevices.forEach(d => {
       const p = DEVICE_PROPERTIES[d.type];
       totalCost += p.cost;
       totalEnergy += p.energy;
       maxWidthUsed = Math.max(maxWidthUsed, d.x + p.width);
+      maxHeightUsed = Math.max(maxHeightUsed, d.y + p.length);
     });
+
+    const totalLengthUsed = maxHeightUsed;
 
     return {
       devices: packedDevices,

@@ -21,6 +21,29 @@
   box-shadow: 10px 0 30px rgba(0, 0, 0, 0.2);
 }
 
+.welcomeSection {
+  margin-bottom: 1rem;
+}
+
+.welcomeSection h2 {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.highlight {
+  color: var(--corporate-red);
+  font-weight: 700;
+}
+
+.separator {
+  height: 1px;
+  width: 40px;
+  background: linear-gradient(to right, var(--corporate-red), transparent);
+  margin-top: 0.8rem;
+}
+
 .sidebar h3 {
   margin: 0 0 1rem 0;
   font-size: 1.8rem;

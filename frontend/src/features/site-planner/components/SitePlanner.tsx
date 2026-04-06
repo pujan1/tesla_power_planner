@@ -6,13 +6,13 @@ import { SiteCanvas3D } from './SiteCanvas3D';
 import { SalesModal } from './SalesModal';
 import { useMutation, useQuery } from '../../../hooks/useApi';
 import { API_ENDPOINTS } from '../../../config/api.config';
-import { DeviceType, SiteLayout } from '@tesla/shared';
+import { User, DeviceType, SiteLayout } from '@tesla/shared';
 import { DEVICE_PROPERTIES } from '../constants/device.constants';
 import { DeviceCounts } from '../types/site-planner.types';
 import { useSitePlannerContext } from '../context/SitePlannerContext';
 import styles from '../styles/SitePlanner.module.css';
 
-export const SitePlanner = () => {
+export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
   const { t } = useLanguage();
   const { is3D } = useSitePlannerContext();
   const { counts, updateCount, devices, stats } = useSitePlanner();
@@ -101,6 +101,13 @@ export const SitePlanner = () => {
   return (
     <div className={styles.plannerContainer}>
       <aside className={styles.sidebar}>
+        <div className={styles.welcomeSection}>
+          <h2>
+            <span className={styles.highlight}>{t('dashboard.welcome')}</span> {currentUser.name}!
+          </h2>
+          <div className={styles.separator} />
+        </div>
+
         <h3>
           {t('site.config')}
         </h3>

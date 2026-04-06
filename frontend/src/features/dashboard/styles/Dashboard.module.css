@@ -4,27 +4,6 @@
   height: 100%;
 }
 
-.dashboardHeader {
-  padding: 1rem 2rem;
-  border-bottom: 1px solid var(--border-color);
-  background: var(--card-bg);
-}
-
-.dashboardHeader h2 {
-  font-size: 1.5rem;
-  color: var(--text-primary);
-  margin-bottom: 5px;
-}
-
-.dashboardHeader p {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-}
-
-.highlight {
-  color: var(--corporate-red);
-}
-
 .settingsWrapper {
   position: relative;
 }
