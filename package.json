@@ -10,7 +10,7 @@
   "main": "index.js",
   "scripts": {
     "start": "concurrently \"npm run dev --prefix backend\" \"npm run start --prefix frontend\"",
-    "bootstrap": "npm install && cp backend/.env.example backend/.env || true && npm run build -w @tesla/shared && npm start",
+    "bootstrap": "node scripts/setup.js && npm start",
     "test": "npm test --workspaces --if-present",
     "test:frontend": "npm test -w frontend",
     "test:backend": "npm test -w backend",
