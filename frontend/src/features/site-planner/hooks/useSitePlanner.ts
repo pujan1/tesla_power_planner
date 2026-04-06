@@ -54,7 +54,7 @@ export const useSitePlanner = () => {
       // If adding this device exceeds 100ft, start a new row
       if (currentX + props.width > MAX_WIDTH) {
         currentX = 0;
-        currentY += maxRowHeight + 2; // Adding 2ft gap between rows
+        currentY += maxRowHeight + 10; // 10ft safety gap between rows
         maxRowHeight = 0;
       }
 
@@ -65,7 +65,7 @@ export const useSitePlanner = () => {
         y: currentY,
       });
 
-      currentX += props.width + 2; // Adding 2ft gap between devices
+      currentX += props.width + 10; // 10ft safety gap between hardware units
       maxRowHeight = Math.max(maxRowHeight, props.length);
     });
 

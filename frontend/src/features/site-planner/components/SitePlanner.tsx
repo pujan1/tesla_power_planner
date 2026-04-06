@@ -2,14 +2,19 @@ import React, { useEffect, useCallback } from 'react';
 import { useLanguage } from '../../../context/LanguageContext';
 import { useSitePlanner, DEVICE_PROPERTIES, DeviceCounts } from '../hooks/useSitePlanner';
 import { SiteCanvas } from './SiteCanvas';
+import { SiteCanvas3D } from './SiteCanvas3D';
 import { useMutation, useQuery } from '../../../hooks/useApi';
 import { API_ENDPOINTS } from '../../../config/api.config';
 import { SiteDevice, DeviceType, SiteLayout } from '@tesla/shared';
 import styles from '../styles/SitePlanner.module.css';
 
+import { useSitePlannerContext } from '../context/SitePlannerContext';
+
 export const SitePlanner: React.FC = () => {
+  const { t } = useLanguage();
+  const { is3D } = useSitePlannerContext();
   const { counts, updateCount, devices, stats } = useSitePlanner();
-  
+
   const { mutate: saveSite, loading: saving } = useMutation(API_ENDPOINTS.auth.me.replace('/auth/me', '/auth/sites'), 'POST');
   const { fetchResource: getSites } = useQuery<{ sites: SiteLayout[] }>(API_ENDPOINTS.auth.me.replace('/auth/me', '/auth/sites'));
 
@@ -57,18 +62,18 @@ export const SitePlanner: React.FC = () => {
     <div className={styles.plannerContainer}>
       <aside className={styles.sidebar}>
         <h3>
-          Site Config
+          {t('site.config')}
         </h3>
-        
+
         <div className={styles.deviceControls}>
           {Object.keys(counts).map((type) => (
             <div key={type} className={styles.deviceItem}>
               <div className={styles.deviceHeader}>
-                <label>{type}</label>
+                <label>{t(`device.${type.toLowerCase()}`)}</label>
                 <span className={styles.price}>${DEVICE_PROPERTIES[type as DeviceType].cost.toLocaleString()}</span>
               </div>
-              <input 
-                type="number" 
+              <input
+                type="number"
                 min="0"
                 value={counts[type as keyof DeviceCounts]}
                 onChange={(e) => updateCount(type as keyof DeviceCounts, parseInt(e.target.value) || 0)}
@@ -79,39 +84,43 @@ export const SitePlanner: React.FC = () => {
 
         <div className={styles.statsSection}>
           <div className={styles.statCard}>
-            <label>Total Cost</label>
+            <label>{t('site.totalCost')}</label>
             <span className={styles.value}>${stats.totalCost.toLocaleString()}</span>
           </div>
           <div className={styles.statCard}>
-            <label>Total Energy</label>
+            <label>{t('site.totalEnergy')}</label>
             <span className={styles.value}>{stats.totalEnergy} MWh</span>
           </div>
           <div className={styles.statCard}>
-            <label>Batteries</label>
+            <label>{t('site.batteries')}</label>
             <span className={styles.value}>{stats.batteryCount}</span>
           </div>
           <div className={styles.statCard}>
-            <label>Transformers</label>
+            <label>{t('site.transformers')}</label>
             <span className={styles.value}>{stats.transformerCount}</span>
           </div>
           <div className={styles.statCard} style={{ gridColumn: 'span 2' }}>
-            <label>Area (ft²)</label>
+            <label>{t('site.area')}</label>
             <span className={styles.value}>
               {stats.dimensions.width}ft x {stats.dimensions.length}ft ({stats.totalArea.toLocaleString()} ft²)
             </span>
           </div>
         </div>
 
-        <button 
-          className={styles.saveBtn} 
+        <button
+          className={styles.saveBtn}
           onClick={handleSave}
           disabled={saving}
         >
-          {saving ? 'Saving...' : 'Save Layout'}
+          {saving ? t('site.saving') : t('site.save')}
         </button>
       </aside>
 
-      <SiteCanvas devices={devices} dimensions={stats.dimensions} />
+      {is3D ? (
+        <SiteCanvas3D devices={devices} dimensions={stats.dimensions} />
+      ) : (
+        <SiteCanvas devices={devices} dimensions={stats.dimensions} is3D={is3D} />
+      )}
     </div>
   );
 };

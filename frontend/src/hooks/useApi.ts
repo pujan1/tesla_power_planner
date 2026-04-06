@@ -55,7 +55,7 @@ export function useQuery<TData = any>(endpoint: string) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchResource = useCallback(async () => {
+  const fetchResource = useCallback(async (): Promise<TData> => {
     setLoading(true);
     setError(null);
     try {
@@ -67,12 +67,13 @@ export function useQuery<TData = any>(endpoint: string) {
       const result = await response.json();
 
       if (!response.ok) {
-        const apiError = result as DefaultApiError;
+        const apiError: DefaultApiError = result;
         throw new Error(apiError.error || 'An unexpected error occurred');
       }
 
-      setData(result);
-      return result;
+      const tData = result as TData;
+      setData(tData);
+      return tData;
     } catch (err: any) {
       setError(err.message);
       throw err;
@@ -83,3 +84,4 @@ export function useQuery<TData = any>(endpoint: string) {
 
   return { fetchResource, data, loading, error };
 }
+

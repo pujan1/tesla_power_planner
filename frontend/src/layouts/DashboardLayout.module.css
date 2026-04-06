@@ -25,8 +25,28 @@
   color: var(--text-primary);
 }
 
+.navbarActions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
 .dashboardContent {
   flex: 1;
-  padding: 40px;
   overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 1.5rem;
+    height: 60px;
+  }
+
+  .navbarBrand {
+    font-size: 1.1rem;
+  }
+
+  .navbarActions {
+    gap: 0.8rem;
+  }
 }

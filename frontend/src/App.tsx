@@ -7,6 +7,8 @@ import { LoginForm } from './features/auth/components/LoginForm';
 import { CreateAccountForm } from './features/auth/components/CreateAccountForm';
 import { DashboardView } from './features/dashboard/components/DashboardView';
 import { UserSettingsDropdown } from './features/dashboard/components/UserSettingsDropdown';
+import { SitePlannerProvider } from './features/site-planner/context/SitePlannerContext';
+import { ViewToggle } from './features/site-planner/components/ViewToggle';
 import { useLanguage } from './context/LanguageContext';
 
 type ViewMode = 'LOGIN' | 'CREATE' | 'DASHBOARD';
@@ -74,20 +76,25 @@ function App() {
 
   if (view === 'DASHBOARD' && currentUser) {
     return (
-      <DashboardLayout
-        navbarContent={
-          <UserSettingsDropdown 
-            currentUser={currentUser}
-            onLogout={() => { localStorage.removeItem('token'); setView('LOGIN'); setCurrentUser(null); clearMessages(); }}
-            onUpdateSuccess={(user) => { setCurrentUser(user); setMessage(t('msg.updated')); setTimeout(() => setMessage(''), 3000); }}
-            onError={handleError}
-          />
-        }
-      >
-        {message && <Toast message={message} type="success" />}
-        {error && <Toast message={error} type="error" />}
-        <DashboardView currentUser={currentUser} />
-      </DashboardLayout>
+      <SitePlannerProvider>
+        <DashboardLayout
+          navbarContent={
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+              <ViewToggle />
+              <UserSettingsDropdown 
+                currentUser={currentUser}
+                onLogout={() => { localStorage.removeItem('token'); setView('LOGIN'); setCurrentUser(null); clearMessages(); }}
+                onUpdateSuccess={(user) => { setCurrentUser(user); setMessage(t('msg.updated')); setTimeout(() => setMessage(''), 3000); }}
+                onError={handleError}
+              />
+            </div>
+          }
+        >
+          {message && <Toast message={message} type="success" />}
+          {error && <Toast message={error} type="error" />}
+          <DashboardView currentUser={currentUser} />
+        </DashboardLayout>
+      </SitePlannerProvider>
     );
   }
 

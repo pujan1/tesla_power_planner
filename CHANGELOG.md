@@ -4,6 +4,22 @@ All notable changes to the Tesla Full-Stack Ecosystem will be documented in this
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - WebGL 3D Site Visualization & Global State
+
+### Added
+- **R3F 3D Visualization Engine**: Engineered a high-performance WebGL 3D view using `React Three Fiber` and `Three.js`, featuring volumetric battery meshes and cinematic `OrbitControls`.
+- **Global View Context**: Implemented `SitePlannerContext` to synchronize the 2D/3D view state across the entire dashboard hierarchy.
+- **Header Integrated Toggle**: Relocated the 2D/3D switcher into the global `DashboardLayout` header, resolving layout jumbling and centralizing controls.
+- **Dynamic 3D Environments**: Built theme-aware WebGL environments that toggle between "Night" (Dark Mode) and "City" (Light Mode) with adaptive lighting and ground materials.
+
+### Changed
+- **2D Layout Refinement**: Introduced a 10ft safety gutter and centered the layout workspace for professional spatial organization.
+- **Improved Sidebar Feedback**: Synchronized all configuration labels, inputs, and stat cards with the global theme using CSS variables.
+
+### Fixed
+- **3D Floating Geometry**: Corrected mesh offsets and ground plane positioning to ensure hardware sits flush on the concrete pad.
+- **WebGL Font Errors**: Resolved Three.js font-loading crashes by implementing lightweight HTML overlays and optimized mesh properties.
+
 ## [1.1.0] - Authorization & Security Patch
 
 ### Added

@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
+import { ParamsDictionary, Query } from 'express-serve-static-core';
 import jwt from 'jsonwebtoken';
 import catchAsync from '../../utils/catchAsync';
 import userService from './user.service';
 import config from '../../config';
+import { AuthRequest } from '../../middlewares/authMiddleware';
 
 const generateToken = (username: string) => {
   return jwt.sign({ username }, config.jwtSecret, { expiresIn: '1h' });
@@ -14,18 +16,19 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
   res.status(201).json({ message: 'User created successfully', user, token });
 });
 
-const getMe = catchAsync(async (req: any, res: Response) => {
-  const user = await userService.getUserByUsername(req.user.username);
+const getMe = catchAsync<ParamsDictionary, any, any, Query>(async (req: AuthRequest, res: Response) => {
+  // Safe access because authenticateToken guarantees req.user
+  const user = await userService.getUserByUsername(req.user!.username);
   res.json({ user });
 });
 
-const getUser = catchAsync(async (req: Request /* technically AuthRequest, safe */, res: Response) => {
-  const user = await userService.getUserByUsername(req.params.username as string);
+const getUser = catchAsync<{ username: string }>(async (req: Request<{ username: string }>, res: Response) => {
+  const user = await userService.getUserByUsername(req.params.username);
   res.json({ user });
 });
 
-const updateUser = catchAsync(async (req: Request, res: Response) => {
-  const user = await userService.updateUser(req.params.username as string, req.body);
+const updateUser = catchAsync<{ username: string }>(async (req: Request<{ username: string }>, res: Response) => {
+  const user = await userService.updateUser(req.params.username, req.body);
   res.json({ message: 'User updated successfully', user });
 });
 
@@ -40,13 +43,17 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   res.json({ count: users.length, users });
 });
 
-const saveSite = catchAsync(async (req: any, res: Response) => {
-  const site = await userService.saveSite(req.user.username, req.body);
+interface SiteRequest extends AuthRequest {
+  body: any; // Or specific SiteLayout type
+}
+
+const saveSite = catchAsync<ParamsDictionary, any, any, Query>(async (req: SiteRequest, res: Response) => {
+  const site = await userService.saveSite(req.user!.username, req.body);
   res.json({ message: 'Site saved successfully', site });
 });
 
-const getSites = catchAsync(async (req: any, res: Response) => {
-  const sites = await userService.getSites(req.user.username);
+const getSites = catchAsync<ParamsDictionary, any, any, Query>(async (req: AuthRequest, res: Response) => {
+  const sites = await userService.getSites(req.user!.username);
   res.json({ count: sites.length, sites });
 });
 
