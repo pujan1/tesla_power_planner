@@ -3,7 +3,7 @@ import { API_BASE_URL } from '../config/api.config';
 
 /** Standard error shape returned by the API. */
 interface DefaultApiError {
-  error: string;
+  error: string | { message: string; statusCode?: number };
 }
 
 /**
@@ -50,7 +50,10 @@ export function useMutation<TData = any, TVariables = any>(
 
         if (!response.ok) {
           const apiError: DefaultApiError = result;
-          throw new Error(apiError.error || 'An unexpected error occurred');
+          const message = typeof apiError.error === 'object' 
+            ? apiError.error.message 
+            : (apiError.error || 'An unexpected error occurred');
+          throw new Error(message);
         }
 
         setData(result);
@@ -102,7 +105,10 @@ export function useQuery<TData = any>(endpoint: string) {
 
       if (!response.ok) {
         const apiError: DefaultApiError = result;
-        throw new Error(apiError.error || 'An unexpected error occurred');
+        const message = typeof apiError.error === 'object' 
+          ? apiError.error.message 
+          : (apiError.error || 'An unexpected error occurred');
+        throw new Error(message);
       }
 
       const tData = result as TData;
