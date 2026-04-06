@@ -161,12 +161,12 @@
   margin-top: 1.5rem;
 }
 
-.editBtn, .submitConfigBtn {
+.editBtn {
   width: 100%;
   padding: 1.25rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #f0f0f0;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
   border-radius: 4px;
   font-size: 1rem;
   font-weight: 700;
@@ -174,18 +174,27 @@
   transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 3rem;
 }
 
 .editBtn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.4);
+  background: var(--bg-secondary);
+  border-color: var(--text-secondary);
   transform: translateY(-2px);
+  color: var(--text-primary);
 }
 
 .submitConfigBtn {
+  width: 100%;
+  padding: 1.25rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   background: #E01E35;
-  border-color: #E01E35;
+  border: 1px solid #E01E35;
   color: white;
   margin-top: 1rem;
   margin-bottom: 0px;
@@ -246,7 +255,8 @@
   color: var(--text-primary);
 }
 
-.revertBtn, .autoArrangeBtn {
+.revertBtn,
+.autoArrangeBtn {
   width: 100%;
   padding: 0.8rem;
   border-radius: 8px;

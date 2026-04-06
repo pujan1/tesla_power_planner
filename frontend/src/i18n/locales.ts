@@ -63,7 +63,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "sales.phone": "Phone Number",
     "sales.submit": "Submit Inquiry",
     "sales.cancel": "Cancel",
-    "sales.thankYou": "A Tesla Energy representative will contact you shortly."
+    "sales.thankYou": "A Tesla Energy representative will contact you shortly.",
+    "site.manualWarning": "Manual Layout Active: The 100ft horizontal packing limit is disabled. Use 'Auto Arrange' to return to a standard-compliant grid."
   },
   es: {
     "app.title": "Portal Tesla",
@@ -127,7 +128,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "sales.phone": "Número de Teléfono",
     "sales.submit": "Enviar Consulta",
     "sales.cancel": "Cancelar",
-    "sales.thankYou": "Un representante de Tesla Energy se pondrá en contacto con usted en breve."
+    "sales.thankYou": "Un representante de Tesla Energy se pondrá en contacto con usted en breve.",
+    "site.manualWarning": "Diseño manual activo: El límite de empaquetado horizontal de 100 pies está desactivado. Use 'Auto organizar' para volver a una cuadrícula estándar."
 
   },
   fr: {
@@ -192,7 +194,8 @@ export const translations: Record<Language, Record<string, string>> = {
     "sales.phone": "Numéro de Téléphone",
     "sales.submit": "Soumettre la demande",
     "sales.cancel": "Annuler",
-    "sales.thankYou": "Un représentant de Tesla Energy vous contactera sous peu."
+    "sales.thankYou": "Un représentant de Tesla Energy vous contactera sous peu.",
+    "site.manualWarning": "Plan manuel actif : La limite d'emballage horizontal de 100 pieds est désactivée. Utilisez 'Auto-organiser' pour revenir à une grille conforme aux normes."
 
   },
 };
