@@ -32,30 +32,47 @@ export const LoginForm = ({ onLoginSuccess, onSwitchToCreate, onError }: LoginFo
   };
 
   return (
-    <form className={styles.form} onSubmit={handleLogin} data-testid="login-form">
-      <h2>{t('login.welcome')}</h2>
-      <Input
-        type="text"
-        placeholder={t('login.username')}
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        required
-        data-testid="login-username"
-      />
-      <Input
-        type="password"
-        placeholder={t('login.password')}
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-        data-testid="login-password"
-      />
-      <Button type="submit" disabled={loading} data-testid="login-submit">
-        {loading ? '...' : t('login.btn')}
-      </Button>
-      <p className={styles.switchText}>
-        {t('login.switch')} <button type="button" className={styles.linkBtn} onClick={onSwitchToCreate}>{t('login.createAccount')}</button>
-      </p>
-    </form>
+    <div className={styles.authFormContainer}>
+      <form className={styles.form} onSubmit={handleLogin} data-testid="login-form">
+        <h2>{t('login.welcome')}</h2>
+        <Input
+          type="text"
+          placeholder={t('login.username')}
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+          data-testid="login-username"
+        />
+        <Input
+          type="password"
+          placeholder={t('login.password')}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          data-testid="login-password"
+        />
+        <div className={styles.buttonGroup}>
+          <Button 
+            type="submit" 
+            variant="primary"
+            disabled={loading}
+            data-testid="login-submit"
+          >
+            {t('login.btn')}
+          </Button>
+
+          <Button 
+            type="button" 
+            variant="secondary"
+            onClick={onSwitchToCreate}
+            data-testid="switch-to-signup"
+          >
+            {t('login.createAccount')}
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 };
+
+

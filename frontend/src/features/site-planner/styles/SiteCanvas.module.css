@@ -4,27 +4,42 @@
   overflow: auto;
   position: relative;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start; /* Prevent clipping at top/left */
+  align-items: flex-start;
   padding: 4rem;
   width: 100%;
   height: 100%;
 }
 
+.canvas3DHolder {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg-secondary);
+}
+
+
 .layoutCanvas {
   position: relative;
-  background-color: var(--corporate-gray-4);
-  /* Technical Grid: 10ft (80px) fainted lines */
+  margin: auto; /* Center if fits, scroll if overflows */
+  
+  /* Industrial Ground: Concrete/Gravel Texture */
+  background-color: var(--bg-ground, #e0e0e0);
   background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  background-size: 80px 80px;
+    radial-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 4px 4px, 80px 80px, 80px 80px; /* 10ft grid over gravel noise */
   
   transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1);
   transform-style: preserve-3d;
   flex-shrink: 0;
   box-shadow: 0 50px 100px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
 
 .layoutCanvas::after {
   content: 'SITE 100FT LIMIT';
@@ -155,6 +170,9 @@
   --device-gradient: linear-gradient(145deg, #0070f3, #0050b3);
   --height: 40px;
   --status-color: #3e94ff;
+  
+  /* Precision Padding for Transformer Labels */
+  padding: 10px 6px;
 }
 
 .labelGroup {
@@ -163,7 +181,9 @@
   align-items: center;
   justify-content: center;
   pointer-events: none;
+  height: 100%;
 }
+
 
 .deviceBlock span {
   opacity: 0.8;

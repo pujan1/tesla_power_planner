@@ -1,22 +1,62 @@
-import React, { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { useLanguage } from '../../../context/LanguageContext';
-import { useSitePlanner, DEVICE_PROPERTIES, DeviceCounts } from '../hooks/useSitePlanner';
+import { useSitePlanner } from '../hooks/useSitePlanner';
 import { SiteCanvas } from './SiteCanvas';
 import { SiteCanvas3D } from './SiteCanvas3D';
+import { SalesModal } from './SalesModal';
 import { useMutation, useQuery } from '../../../hooks/useApi';
 import { API_ENDPOINTS } from '../../../config/api.config';
-import { SiteDevice, DeviceType, SiteLayout } from '@tesla/shared';
+import { DeviceType, SiteLayout } from '@tesla/shared';
+import { DEVICE_PROPERTIES } from '../constants/device.constants';
+import { DeviceCounts } from '../types/site-planner.types';
+import { useSitePlannerContext } from '../context/SitePlannerContext';
 import styles from '../styles/SitePlanner.module.css';
 
-import { useSitePlannerContext } from '../context/SitePlannerContext';
-
-export const SitePlanner: React.FC = () => {
+export const SitePlanner = () => {
   const { t } = useLanguage();
   const { is3D } = useSitePlannerContext();
   const { counts, updateCount, devices, stats } = useSitePlanner();
 
+  const [showSalesModal, setShowSalesModal] = useState(false);
+  const [lastSafeCounts, setLastSafeCounts] = useState<DeviceCounts | null>(null);
+
   const { mutate: saveSite, loading: saving } = useMutation(API_ENDPOINTS.auth.me.replace('/auth/me', '/auth/sites'), 'POST');
   const { fetchResource: getSites } = useQuery<{ sites: SiteLayout[] }>(API_ENDPOINTS.auth.me.replace('/auth/me', '/auth/sites'));
+
+  const handleUpdateCount = (type: keyof DeviceCounts, count: number) => {
+    // Calculate hypothetical total with the new count
+    const otherUnits = (Object.entries(counts) as [keyof DeviceCounts, number][])
+      .filter(([t]) => t !== type)
+      .reduce((acc, [_, c]) => acc + c, 0);
+    
+    const newBatteryTotal = otherUnits + count;
+    const newTransformerTotal = Math.ceil(newBatteryTotal / 2);
+    const totalUnits = newBatteryTotal + newTransformerTotal;
+
+    if (totalUnits > 50) {
+      setLastSafeCounts({ ...counts });
+      setShowSalesModal(true);
+      return;
+    }
+
+    updateCount(type, count);
+  };
+
+  const handleSalesClose = () => {
+    if (lastSafeCounts) {
+      // Revert to last safe counts
+      (Object.entries(lastSafeCounts) as [keyof DeviceCounts, number][]).forEach(([type, count]) => {
+        updateCount(type, count);
+      });
+    }
+    setShowSalesModal(false);
+  };
+
+  const handleSalesSubmit = (data: { email: string; phone: string }) => {
+    console.log('Sales lead captured:', data);
+    handleSalesClose(); // Revert anyway as per user's request for graceful edge case handling
+    alert(t('sales.thankYou') || 'A Tesla Energy representative will contact you shortly.');
+  };
 
   const handleSave = async () => {
     try {
@@ -45,8 +85,8 @@ export const SitePlanner: React.FC = () => {
           [DeviceType.MEGAPACK]: latest.devices.filter((d: any) => d.type === DeviceType.MEGAPACK).length,
           [DeviceType.POWERPACK]: latest.devices.filter((d: any) => d.type === DeviceType.POWERPACK).length,
         };
-        Object.entries(newCounts).forEach(([type, count]) => {
-          updateCount(type as keyof DeviceCounts, count);
+        (Object.entries(newCounts) as [keyof DeviceCounts, number][]).forEach(([type, count]) => {
+          updateCount(type, count);
         });
       }
     } catch (err) {
@@ -66,7 +106,7 @@ export const SitePlanner: React.FC = () => {
         </h3>
 
         <div className={styles.deviceControls}>
-          {Object.keys(counts).map((type) => (
+          {(Object.keys(counts) as (keyof DeviceCounts)[]).map((type) => (
             <div key={type} className={styles.deviceItem}>
               <div className={styles.deviceHeader}>
                 <label>{t(`device.${type.toLowerCase()}`)}</label>
@@ -75,8 +115,8 @@ export const SitePlanner: React.FC = () => {
               <input
                 type="number"
                 min="0"
-                value={counts[type as keyof DeviceCounts]}
-                onChange={(e) => updateCount(type as keyof DeviceCounts, parseInt(e.target.value) || 0)}
+                value={counts[type]}
+                onChange={(e) => handleUpdateCount(type, parseInt(e.target.value) || 0)}
                 data-testid={`device-input-${type.toLowerCase()}`}
               />
             </div>
@@ -122,6 +162,13 @@ export const SitePlanner: React.FC = () => {
         <SiteCanvas3D devices={devices} dimensions={stats.dimensions} />
       ) : (
         <SiteCanvas devices={devices} dimensions={stats.dimensions} is3D={is3D} />
+      )}
+
+      {showSalesModal && (
+        <SalesModal 
+          onClose={handleSalesClose} 
+          onSubmit={handleSalesSubmit} 
+        />
       )}
     </div>
   );

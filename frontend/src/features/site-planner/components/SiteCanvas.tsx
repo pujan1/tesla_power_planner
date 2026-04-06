@@ -1,7 +1,6 @@
-import React from 'react';
 import { useLanguage } from '../../../context/LanguageContext';
 import { SiteDevice } from '@tesla/shared';
-import { DEVICE_PROPERTIES } from '../hooks/useSitePlanner';
+import { DEVICE_PROPERTIES } from '../constants/device.constants';
 import styles from '../styles/SiteCanvas.module.css';
 
 interface SiteCanvasProps {
@@ -13,7 +12,7 @@ interface SiteCanvasProps {
 const SCALE = 8; // 8px per foot
 const GUTTER = 10; // 10ft safety gutter
 
-export const SiteCanvas: React.FC<SiteCanvasProps> = ({ devices, dimensions, is3D }) => {
+export const SiteCanvas = ({ devices, dimensions, is3D }: SiteCanvasProps) => {
   const { t } = useLanguage();
   const canvasWidth = (dimensions.width + GUTTER * 2) * SCALE;
   const canvasHeight = (dimensions.length + GUTTER * 2) * SCALE;

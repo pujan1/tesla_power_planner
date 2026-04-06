@@ -2,7 +2,22 @@
 
 All notable changes to the Tesla Full-Stack Ecosystem will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+All format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.3.0] - Industrial Modularity & Component Standardization
+
+### Added
+- **Centralized Hardware Schema**: Extracted all industrial constants (`DEVICE_PROPERTIES`, `DEVICE_COLORS`, `DEVICE_HEIGHTS`) into a unified `device.constants.ts` registry.
+- **Dedicated Type Registry**: Consolidated all 3D interfaces and site-planner specific types into a standalone `site-planner.types.ts` module.
+- **Isolated Logistical Components**: Decoupled `ParkingMarker` from the main scene graph, isolating its high-contrast texture logic into a dedicated component file.
+
+### Changed
+- **Global Functional Standard**: Refactored the entire frontend codebase to a modern functional declaration pattern: `export const Component = ({ props }) => { ... }`.
+- **Architectural Cleanup**: Removed all usages of `React.FC` and `FC` across the repository to improve Type inference and maintainability.
+- **Modern JSX Optimization**: Eliminated over 15 redundant `import React` calls and switched to shorthand `<>...</>` Fragments.
+
+### Removed
+- **Technical Debt**: Purged unreferenced Three.js primitives and Drei components that were no longer required after modularization.
 
 ## [1.2.0] - WebGL 3D Site Visualization & Global State
 

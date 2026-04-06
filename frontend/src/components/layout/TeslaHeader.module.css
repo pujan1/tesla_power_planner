@@ -1,0 +1,35 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: transparent;
+  color: white;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  padding: 0 48px;
+  font-family: Gotham, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  transition: background 0.3s ease;
+}
+
+.container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+
+.logo {
+  cursor: pointer;
+  width: 120px;
+  margin-top: 5px;
+}
+
+@media (max-width: 1200px) {
+  .header {
+    padding: 0 24px;
+  }
+}
+

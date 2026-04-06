@@ -27,38 +27,55 @@ export const CreateAccountForm = ({ onCreateSuccess, onSwitchToLogin, onError }:
   };
 
   return (
-    <form className={styles.form} onSubmit={handleCreate} data-testid="signup-form">
-      <h2>{t('create.title')}</h2>
-      <Input
-        type="text"
-        placeholder={t('create.fullName')}
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        required
-        data-testid="signup-fullname"
-      />
-      <Input
-        type="text"
-        placeholder={t('login.username')}
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        required
-        data-testid="signup-username"
-      />
-      <Input
-        type="password"
-        placeholder={t('login.password')}
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-        data-testid="signup-password"
-      />
-      <Button type="submit" disabled={loading} data-testid="signup-submit">
-        {loading ? '...' : t('create.btn')}
-      </Button>
-      <p className={styles.switchText}>
-        {t('create.switch')} <button type="button" className={styles.linkBtn} onClick={onSwitchToLogin}>{t('create.loginText')}</button>
-      </p>
-    </form>
+    <div className={styles.authFormContainer}>
+      <form className={styles.form} onSubmit={handleCreate} data-testid="signup-form">
+        <h2>{t('create.title')}</h2>
+        <Input
+          type="text"
+          placeholder={t('create.fullName')}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          data-testid="signup-fullname"
+        />
+        <Input
+          type="text"
+          placeholder={t('login.username')}
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+          data-testid="signup-username"
+        />
+        <Input
+          type="password"
+          placeholder={t('login.password')}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          data-testid="signup-password"
+        />
+        <div className={styles.buttonGroup}>
+          <Button 
+            type="submit" 
+            variant="primary"
+            disabled={loading}
+            data-testid="signup-submit"
+          >
+            {t('create.btn')}
+          </Button>
+
+          <Button 
+            type="button" 
+            variant="secondary"
+            onClick={onSwitchToLogin}
+            data-testid="switch-to-login"
+          >
+            {t('create.loginText')}
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 };
+
+

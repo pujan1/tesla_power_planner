@@ -1,17 +1,8 @@
 import { useMemo, useState, useCallback } from 'react';
 import { DeviceType, SiteDevice } from '@tesla/shared';
 
-export const DEVICE_PROPERTIES = {
-  [DeviceType.MEGAPACK_XL]: { width: 40, length: 10, energy: 4, cost: 120000 },
-  [DeviceType.MEGAPACK_2]: { width: 30, length: 10, energy: 3, cost: 80000 },
-  [DeviceType.MEGAPACK]: { width: 30, length: 10, energy: 2, cost: 50000 },
-  [DeviceType.POWERPACK]: { width: 10, length: 10, energy: 1, cost: 10000 },
-  [DeviceType.TRANSFORMER]: { width: 10, length: 10, energy: -0.5, cost: 10000 },
-};
-
-export type DeviceCounts = {
-  [key in DeviceType.MEGAPACK_XL | DeviceType.MEGAPACK_2 | DeviceType.MEGAPACK | DeviceType.POWERPACK]: number;
-};
+import { DEVICE_PROPERTIES } from '../constants/device.constants';
+import { DeviceCounts } from '../types/site-planner.types';
 
 export const useSitePlanner = () => {
   const [counts, setCounts] = useState<DeviceCounts>({

@@ -1,4 +1,3 @@
-import React from 'react';
 import { InputProps } from '../../types/ui.types';
 import styles from './Input.module.css';
 

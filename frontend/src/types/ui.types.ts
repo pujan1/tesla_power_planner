@@ -1,7 +1,7 @@
 import React from 'react';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'logout';
+  variant?: 'primary' | 'secondary' | 'logout' | 'teslaPrimary' | 'teslaSecondary';
 }
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {

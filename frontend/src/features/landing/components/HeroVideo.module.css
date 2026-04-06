@@ -1,0 +1,99 @@
+.heroContainer {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: black;
+}
+
+.videoBackground {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  filter: brightness(0.9);
+}
+
+.overlayContent {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 120px 20px 60px;
+  color: white;
+  background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
+}
+
+.heroText {
+  text-align: center;
+  animation: slideDown 1s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.title {
+  font-size: 3.5rem;
+  font-weight: 500;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  font-weight: 400;
+  opacity: 0.9;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.configDetail {
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--corporate-red);
+  margin-top: 10px;
+}
+
+.authWrapper {
+  width: 100%;
+  max-width: 400px;
+  margin-top: auto;
+  margin-bottom: auto;
+  animation: fadeIn 1.5s ease-in;
+}
+
+.footerInfo {
+  text-align: center;
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 2.5rem;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+  }
+  
+  .authWrapper {
+    max-width: 320px;
+  }
+}

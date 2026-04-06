@@ -1,4 +1,3 @@
-import React from 'react';
 import { ButtonProps } from '../../types/ui.types';
 import styles from './Button.module.css';
 

@@ -1,9 +1,8 @@
-import React from 'react';
 import { useLanguage } from '../../../context/LanguageContext';
 import { useSitePlannerContext } from '../context/SitePlannerContext';
 import styles from '../styles/ViewToggle.module.css';
 
-export const ViewToggle: React.FC = () => {
+export const ViewToggle = () => {
   const { t } = useLanguage();
   const { is3D, setIs3D } = useSitePlannerContext();
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import { ToastProps } from '../../types/ui.types';
 import styles from './Toast.module.css';
 

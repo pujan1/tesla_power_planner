@@ -31,13 +31,39 @@
   background: var(--border-color);
 }
 
+.teslaPrimary {
+  background: #3e6ae1;
+  color: white;
+  border-radius: 99px;
+  padding: 12px 24px;
+}
+
+.teslaPrimary:hover {
+  background: #3457bd;
+}
+
+.teslaSecondary {
+  background: white;
+  color: #171a20;
+  border-radius: 99px;
+  padding: 12px 24px;
+}
+
+.teslaSecondary:hover {
+  background: #f4f4f4;
+}
+
 .logout {
-  background: var(--corporate-gray-11);
-  color: var(--corporate-white);
-  margin-top: 15px;
+  background: transparent;
+  color: #ff4d4d;
+  border: 1px solid rgba(255, 77, 77, 0.3);
+  margin-top: 1.5rem;
   padding: 10px;
 }
 
 .logout:hover {
-  background: var(--corporate-black);
+  background: rgba(255, 77, 77, 0.1);
+  border-color: #ff4d4d;
 }
+
+

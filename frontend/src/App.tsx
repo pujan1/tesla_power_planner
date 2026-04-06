@@ -8,6 +8,7 @@ import { CreateAccountForm } from './features/auth/components/CreateAccountForm'
 import { DashboardView } from './features/dashboard/components/DashboardView';
 import { UserSettingsDropdown } from './features/dashboard/components/UserSettingsDropdown';
 import { SitePlannerProvider } from './features/site-planner/context/SitePlannerContext';
+import { HeroVideo } from './features/landing/components/HeroVideo';
 import { ViewToggle } from './features/site-planner/components/ViewToggle';
 import { useLanguage } from './context/LanguageContext';
 
@@ -104,23 +105,26 @@ function App() {
       {message && <Toast message={message} type="success" />}
       {error && <Toast message={error} type="error" />}
 
-      {view === 'LOGIN' && (
-        <LoginForm 
-          onLoginSuccess={handleLoginSuccess}
-          onSwitchToCreate={() => { setView('CREATE'); clearMessages(); }}
-          onError={handleError}
-        />
-      )}
+      <HeroVideo>
+        {view === 'LOGIN' && (
+          <LoginForm 
+            onLoginSuccess={handleLoginSuccess}
+            onSwitchToCreate={() => { setView('CREATE'); clearMessages(); }}
+            onError={handleError}
+          />
+        )}
 
-      {view === 'CREATE' && (
-        <CreateAccountForm 
-          onCreateSuccess={handleCreateSuccess}
-          onSwitchToLogin={() => { setView('LOGIN'); clearMessages(); }}
-          onError={handleError}
-        />
-      )}
+        {view === 'CREATE' && (
+          <CreateAccountForm 
+            onCreateSuccess={handleCreateSuccess}
+            onSwitchToLogin={() => { setView('LOGIN'); clearMessages(); }}
+            onError={handleError}
+          />
+        )}
+      </HeroVideo>
     </MainLayout>
   );
 }
+
 
 export default App;

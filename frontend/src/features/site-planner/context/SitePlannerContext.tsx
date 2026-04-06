@@ -7,7 +7,7 @@ interface SitePlannerContextType {
 
 const SitePlannerContext = createContext<SitePlannerContextType | undefined>(undefined);
 
-export const SitePlannerProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const SitePlannerProvider = ({ children }: { children: ReactNode }) => {
   const [is3D, setIs3D] = useState(false);
 
   return (
