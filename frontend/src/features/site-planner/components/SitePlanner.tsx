@@ -100,9 +100,9 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
 
   return (
     <div className={styles.plannerContainer}>
-      <aside className={styles.sidebar}>
+      <aside className={styles.sidebar} aria-label="Site Configuration Sidebar">
         <div className={styles.welcomeSection}>
-          <h2>
+          <h2 id="welcome-heading">
             <span className={styles.highlight}>{t('dashboard.welcome')}</span> {currentUser.name}!
           </h2>
           <div className={styles.separator} />
@@ -113,24 +113,29 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
         </h3>
 
         <div className={styles.deviceControls}>
-          {(Object.keys(counts) as (keyof DeviceCounts)[]).map((type) => (
-            <div key={type} className={styles.deviceItem}>
-              <div className={styles.deviceHeader}>
-                <label>{t(`device.${type.toLowerCase()}`)}</label>
-                <span className={styles.price}>${DEVICE_PROPERTIES[type as DeviceType].cost.toLocaleString()}</span>
+          {(Object.keys(counts) as (keyof DeviceCounts)[]).map((type) => {
+            const inputId = `input-${type.toLowerCase()}`;
+            return (
+              <div key={type} className={styles.deviceItem}>
+                <div className={styles.deviceHeader}>
+                  <label htmlFor={inputId}>{t(`device.${type.toLowerCase()}`)}</label>
+                  <span className={styles.price}>${DEVICE_PROPERTIES[type as DeviceType].cost.toLocaleString()}</span>
+                </div>
+                <input
+                  id={inputId}
+                  type="number"
+                  min="0"
+                  value={counts[type]}
+                  onChange={(e) => handleUpdateCount(type, parseInt(e.target.value) || 0)}
+                  data-testid={`device-input-${type.toLowerCase()}`}
+                  aria-label={`${t(`device.${type.toLowerCase()}`)} count`}
+                />
               </div>
-              <input
-                type="number"
-                min="0"
-                value={counts[type]}
-                onChange={(e) => handleUpdateCount(type, parseInt(e.target.value) || 0)}
-                data-testid={`device-input-${type.toLowerCase()}`}
-              />
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        <div className={styles.statsSection}>
+        <div className={styles.statsSection} aria-live="polite" aria-label="Site Statistics">
           <div className={styles.statCard}>
             <label>{t('site.totalCost')}</label>
             <span className={styles.value}>${stats.totalCost.toLocaleString()}</span>

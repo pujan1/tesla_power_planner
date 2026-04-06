@@ -41,7 +41,18 @@ export const translations: Record<Language, Record<string, string>> = {
     "device.megapack2": "Megapack 2",
     "device.megapack": "Megapack",
     "device.powerpack": "Powerpack",
-    "device.transformer": "Transformer"
+    "device.transformer": "Transformer",
+    "landing.megapack": "Megapack",
+    "landing.description": "Large-Scale Energy Storage",
+    "landing.configDetail": "Megapack Config - Your one page to configure solutions for all your battery needs",
+    "landing.footer": "Experience the future of energy storage.",
+    "sales.title": "Inquiry Details",
+    "sales.message": "Configure our standard utility-scale battery into the layout you need.",
+    "sales.email": "Email Address",
+    "sales.phone": "Phone Number",
+    "sales.submit": "Submit Inquiry",
+    "sales.cancel": "Cancel",
+    "sales.thankYou": "A Tesla Energy representative will contact you shortly."
   },
   es: {
     "app.title": "Portal Tesla",
@@ -83,7 +94,18 @@ export const translations: Record<Language, Record<string, string>> = {
     "device.megapack2": "Megapack 2",
     "device.megapack": "Megapack",
     "device.powerpack": "Powerpack",
-    "device.transformer": "Transformador"
+    "device.transformer": "Transformador",
+    "landing.megapack": "Megapack",
+    "landing.description": "Almacenamiento de Energía a Gran Escala",
+    "landing.configDetail": "Megapack Config - Su página para configurar soluciones para todas sus necesidades de batería",
+    "landing.footer": "Experimente el futuro del almacenamiento de energía.",
+    "sales.title": "Detalles de la consulta",
+    "sales.message": "Configure nuestra batería estándar a escala de servicios públicos en el diseño que necesite.",
+    "sales.email": "Correo Electrónico",
+    "sales.phone": "Número de Teléfono",
+    "sales.submit": "Enviar Consulta",
+    "sales.cancel": "Cancelar",
+    "sales.thankYou": "Un representante de Tesla Energy se pondrá en contacto con usted en breve."
   },
   fr: {
     "app.title": "Portail Tesla",
@@ -125,7 +147,17 @@ export const translations: Record<Language, Record<string, string>> = {
     "device.megapack2": "Megapack 2",
     "device.megapack": "Megapack",
     "device.powerpack": "Powerpack",
-    "device.transformer": "Transformateur"
-  }
+    "device.transformer": "Transformateur",
+    "landing.megapack": "Megapack",
+    "landing.description": "Stockage d'énergie à grande échelle",
+    "landing.configDetail": "Megapack Config - Votre page unique pour configurer des solutions pour tous vos besoins en batteries",
+    "landing.footer": "Découvrez l'avenir du stockage d'énergie.",
+    "sales.title": "Détails de la demande",
+    "sales.message": "Configurez notre batterie standard à l'échelle des services publics selon le plan dont vous avez besoin.",
+    "sales.email": "Adresse Courriel",
+    "sales.phone": "Numéro de Téléphone",
+    "sales.submit": "Soumettre la demande",
+    "sales.cancel": "Annuler",
+    "sales.thankYou": "Un représentant de Tesla Energy vous contactera sous peu."
+  },
 };
-

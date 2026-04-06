@@ -6,8 +6,8 @@ import styles from '../styles/Dashboard.module.css';
 
 export const DashboardView = ({ currentUser }: DashboardViewProps) => {
   return (
-    <div className={styles.dashboardContainer}>
+    <main className={styles.dashboardContainer} aria-label="Energy Site Planner Workspace">
       <SitePlanner currentUser={currentUser} />
-    </div>
+    </main>
   );
 };

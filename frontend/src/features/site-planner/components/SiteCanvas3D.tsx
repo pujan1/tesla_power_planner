@@ -27,7 +27,13 @@ export const SiteCanvas3D = ({ devices, dimensions }: SiteCanvas3DProps) => {
   const envPreset = isDark ? 'night' : 'city';
 
   return (
-    <div className={styles.canvas3DHolder} style={{ background: bgColor }}>
+    <div 
+      className={styles.canvas3DHolder} 
+      style={{ background: bgColor }}
+      role="img"
+      aria-label="3D Energy Site Layout Visualization"
+      aria-description={`Technical visualization of the site layout. Dimensions: ${dimensions.width}ft by ${dimensions.length}ft. Contains ${devices.length} hardware units including Megapacks and Transformers.`}
+    >
       <Canvas shadows gl={{ antialias: true, logarithmicDepthBuffer: true }}>
         <PerspectiveCamera 
           makeDefault 
