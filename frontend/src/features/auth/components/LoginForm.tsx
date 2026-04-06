@@ -8,6 +8,17 @@ import { API_ENDPOINTS } from '../../../config/api.config';
 import { LoginFormProps } from '../../../types/auth.types';
 import styles from '../styles/Auth.module.css';
 
+/**
+ * Login form component for the unauthenticated landing page.
+ *
+ * Collects username/password and calls the login API endpoint.
+ * On success, applies saved language/theme preferences and invokes `onLoginSuccess`.
+ *
+ * @param props.onLoginSuccess  - Callback with `(user, token)` on successful auth.
+ * @param props.onSwitchToCreate - Callback to navigate to the create account view.
+ * @param props.onError          - Callback with error message string on failure.
+ * @returns A styled login form.
+ */
 export const LoginForm = ({ onLoginSuccess, onSwitchToCreate, onError }: LoginFormProps) => {
   const { t, setLanguage } = useLanguage();
   const { setTheme } = useTheme();
@@ -17,6 +28,12 @@ export const LoginForm = ({ onLoginSuccess, onSwitchToCreate, onError }: LoginFo
   
   const { mutate: loginUser, loading } = useMutation(API_ENDPOINTS.auth.login, 'POST');
 
+  /**
+   * Validates credentials and logs the user in.
+   * Applies saved user preferences (language, theme) from the API response.
+   *
+   * @param e - The form submission event.
+   */
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {

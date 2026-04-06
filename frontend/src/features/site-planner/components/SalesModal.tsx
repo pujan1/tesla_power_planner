@@ -5,15 +5,32 @@ import { Input } from '../../../components/ui/Input';
 import styles from '../styles/SalesModal.module.css';
 
 interface SalesModalProps {
+  /** Callback to close the modal (reverts counts to safe values). */
   onClose: () => void;
+  /** Callback with the captured sales lead data. */
   onSubmit: (data: { email: string; phone: string }) => void;
 }
 
+/**
+ * Modal dialog for capturing sales leads when the site unit limit is exceeded.
+ *
+ * Displays a branded form collecting email and phone, then submits the
+ * lead data via the `onSubmit` callback.
+ *
+ * @param props.onClose  - Closes the modal and reverts device counts.
+ * @param props.onSubmit - Submits the captured lead `{ email, phone }`.
+ * @returns A modal overlay with a branded sales contact form.
+ */
 export const SalesModal = ({ onClose, onSubmit }: SalesModalProps) => {
   const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
 
+  /**
+   * Handles form submission, forwarding the lead data to the parent.
+   *
+   * @param e - The form submission event.
+   */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit({ email, phone });

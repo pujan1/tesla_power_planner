@@ -1,6 +1,11 @@
+/**
+ * @module index
+ * Application entry point. Bootstraps React with context providers
+ * (ThemeProvider → LanguageProvider → App) and mounts to the DOM.
+ */
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './styles/global.css'; // Replaced App.css and index.css standard mappings
+import './styles/global.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { LanguageProvider } from './context/LanguageContext';

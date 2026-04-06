@@ -9,6 +9,12 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+/**
+ * Hook to access the current language, setter, and translation function.
+ *
+ * @throws {Error} If used outside a `LanguageProvider`.
+ * @returns `{ language, setLanguage, t }` — the current language, a setter, and the i18n translation function.
+ */
 export const useLanguage = () => {
   const context = useContext(LanguageContext);
   if (!context) {
@@ -17,6 +23,12 @@ export const useLanguage = () => {
   return context;
 };
 
+/**
+ * Context provider that manages the active language and exposes
+ * a `t(key)` translation function to all descendants.
+ *
+ * @param props.children - Child components that can consume language context.
+ */
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguageState] = useState<Language>('en');
 

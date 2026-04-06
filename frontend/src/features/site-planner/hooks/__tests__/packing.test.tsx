@@ -1,3 +1,9 @@
+/**
+ * @module packing.test
+ * Integration tests for the packing algorithm via useSitePlanner hook.
+ * Verifies that devices are correctly placed in rows, handle row transitions,
+ * and fill gaps based on available space.
+ */
 import { renderHook, act } from '@testing-library/react';
 import { useSitePlanner } from '../useSitePlanner';
 import { DeviceType } from '@tesla/shared';

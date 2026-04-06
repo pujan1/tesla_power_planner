@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { User } from '@tesla/shared';
+import React, { useEffect } from 'react';
 import { MainLayout } from './layouts/MainLayout';
 import { DashboardLayout } from './layouts/DashboardLayout';
 import { Toast } from './components/ui/Toast';
@@ -11,70 +10,48 @@ import { SitePlannerProvider } from './features/site-planner/context/SitePlanner
 import { HeroVideo } from './features/landing/components/HeroVideo';
 import { ViewToggle } from './features/site-planner/components/ViewToggle';
 import { useLanguage } from './context/LanguageContext';
+import { useAuth } from './hooks/useAuth';
 
-type ViewMode = 'LOGIN' | 'CREATE' | 'DASHBOARD';
-
+/**
+ * Root application component. Acts as a top-level router that switches
+ * between unauthenticated views (Login, Create Account) and the
+ * authenticated Dashboard view.
+ *
+ * @returns The full application UI tree.
+ */
 function App() {
   const { t } = useLanguage();
-  const [view, setView] = useState<ViewMode>('LOGIN');
-  
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
-  const [isCheckingSession, setIsCheckingSession] = useState(true);
+  const {
+    view,
+    setView,
+    currentUser,
+    message,
+    error,
+    isCheckingSession,
+    handleLoginSuccess,
+    handleCreateSuccess,
+    handleError,
+    handleLogout,
+    handleUpdateSuccess,
+    clearMessages,
+    hydrateSession,
+  } = useAuth(t);
 
-  React.useEffect(() => {
-    const hydrateSession = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setIsCheckingSession(false);
-        return;
-      }
-      try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL ? `${process.env.REACT_APP_API_URL}/api` : 'http://localhost:3001/api'}/auth/me`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await response.json();
-        if (response.ok && data.user) {
-          setCurrentUser(data.user);
-          setView('DASHBOARD');
-        } else {
-          localStorage.removeItem('token');
-        }
-      } catch (err) {
-        localStorage.removeItem('token');
-      }
-      setIsCheckingSession(false);
-    };
+  /** Hydrate session from localStorage on mount. */
+  useEffect(() => {
     hydrateSession();
-  }, []);
+  }, [hydrateSession]);
 
-  const handleLoginSuccess = (user: User, token?: string) => {
-    if (token) localStorage.setItem('token', token);
-    setCurrentUser(user);
-    setView('DASHBOARD');
-  };
-
-  const handleCreateSuccess = (token?: string) => {
-    setMessage(t('msg.created'));
-    setView('LOGIN');
-  };
-
-  const handleError = (msg: string) => {
-    setError(msg);
-    setTimeout(() => setError(''), 5000);
-  };
-
-  const clearMessages = () => {
-    setMessage('');
-    setError('');
-  };
-
-  // Authenticated State Router
+  // Loading state while checking for an existing session
   if (isCheckingSession) {
-    return <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#111', color: '#fff' }}>Loading Session...</div>;
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#111', color: '#fff' }}>
+        Loading Session...
+      </div>
+    );
   }
 
+  // ── Authenticated View ──
   if (view === 'DASHBOARD' && currentUser) {
     return (
       <SitePlannerProvider>
@@ -84,8 +61,8 @@ function App() {
               <ViewToggle />
               <UserSettingsDropdown 
                 currentUser={currentUser}
-                onLogout={() => { localStorage.removeItem('token'); setView('LOGIN'); setCurrentUser(null); clearMessages(); }}
-                onUpdateSuccess={(user) => { setCurrentUser(user); setMessage(t('msg.updated')); setTimeout(() => setMessage(''), 3000); }}
+                onLogout={handleLogout}
+                onUpdateSuccess={handleUpdateSuccess}
                 onError={handleError}
               />
             </div>
@@ -99,7 +76,7 @@ function App() {
     );
   }
 
-  // Unauthenticated State Router
+  // ── Unauthenticated View ──
   return (
     <MainLayout>
       {message && <Toast message={message} type="success" />}

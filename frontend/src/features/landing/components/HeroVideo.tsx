@@ -2,9 +2,19 @@ import { useLanguage } from '../../../context/LanguageContext';
 import styles from './HeroVideo.module.css';
 
 interface HeroVideoProps {
+  /** Optional children rendered in the auth wrapper area over the video. */
   children?: React.ReactNode;
 }
 
+/**
+ * Full-viewport hero section with a looping background video.
+ *
+ * Displays the Tesla Megapack promotional video with overlay text
+ * (title, subtitle, config detail) and a slot for auth forms.
+ *
+ * @param props.children - Content rendered in the auth wrapper (e.g., LoginForm).
+ * @returns A full-screen hero container with video background and overlay.
+ */
 export const HeroVideo = ({ children }: HeroVideoProps) => {
   const { t } = useLanguage();
   

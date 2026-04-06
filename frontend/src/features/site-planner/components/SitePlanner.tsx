@@ -6,12 +6,22 @@ import { SiteCanvas3D } from './SiteCanvas3D';
 import { SalesModal } from './SalesModal';
 import { useMutation, useQuery } from '../../../hooks/useApi';
 import { API_ENDPOINTS } from '../../../config/api.config';
-import { User, DeviceType, SiteLayout } from '@tesla/shared';
+import { User, SiteLayout } from '@tesla/shared';
 import { DEVICE_PROPERTIES } from '../constants/device.constants';
 import { DeviceCounts } from '../types/site-planner.types';
 import { useSitePlannerContext } from '../context/SitePlannerContext';
+import { canAddDevices, buildSitePayload, parseSiteLayoutToCounts } from '../helpers/site-planner.helpers';
 import styles from '../styles/SitePlanner.module.css';
 
+/**
+ * Main site planner component. Provides:
+ * - A sidebar with device count controls, statistics, and a save button.
+ * - A 2D or 3D canvas rendering of the packed device layout.
+ * - A sales modal that triggers when the unit limit is exceeded.
+ *
+ * @param props.currentUser - The authenticated user object.
+ * @returns The full site planner UI (sidebar + canvas + optional modal).
+ */
 export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
   const { t } = useLanguage();
   const { is3D } = useSitePlannerContext();
@@ -23,28 +33,27 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
   const { mutate: saveSite, loading: saving } = useMutation(API_ENDPOINTS.auth.me.replace('/auth/me', '/auth/sites'), 'POST');
   const { fetchResource: getSites } = useQuery<{ sites: SiteLayout[] }>(API_ENDPOINTS.auth.me.replace('/auth/me', '/auth/sites'));
 
+  /**
+   * Validates whether adding `count` units of `type` stays within the site
+   * limit. If it exceeds the limit, opens the sales modal instead.
+   *
+   * @param type  - The device type being changed.
+   * @param count - The proposed new count.
+   */
   const handleUpdateCount = (type: keyof DeviceCounts, count: number) => {
-    // Calculate hypothetical total with the new count
-    const otherUnits = (Object.entries(counts) as [keyof DeviceCounts, number][])
-      .filter(([t]) => t !== type)
-      .reduce((acc, [_, c]) => acc + c, 0);
-    
-    const newBatteryTotal = otherUnits + count;
-    const newTransformerTotal = Math.ceil(newBatteryTotal / 2);
-    const totalUnits = newBatteryTotal + newTransformerTotal;
-
-    if (totalUnits > 50) {
+    if (!canAddDevices(counts, type, count)) {
       setLastSafeCounts({ ...counts });
       setShowSalesModal(true);
       return;
     }
-
     updateCount(type, count);
   };
 
+  /**
+   * Closes the sales modal and reverts counts to the last safe values.
+   */
   const handleSalesClose = () => {
     if (lastSafeCounts) {
-      // Revert to last safe counts
       (Object.entries(lastSafeCounts) as [keyof DeviceCounts, number][]).forEach(([type, count]) => {
         updateCount(type, count);
       });
@@ -52,40 +61,41 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
     setShowSalesModal(false);
   };
 
+  /**
+   * Handles the sales lead form submission.
+   *
+   * @param data       - The captured lead data.
+   * @param data.email - Contact email address.
+   * @param data.phone - Contact phone number.
+   */
   const handleSalesSubmit = (data: { email: string; phone: string }) => {
     console.log('Sales lead captured:', data);
-    handleSalesClose(); // Revert anyway as per user's request for graceful edge case handling
+    handleSalesClose();
     alert(t('sales.thankYou') || 'A Tesla Energy representative will contact you shortly.');
   };
 
+  /**
+   * Persists the current device layout to the backend.
+   */
   const handleSave = async () => {
     try {
-      const siteData: SiteLayout = {
-        id: 'main-layout', // For now, we support one main layout
-        name: 'My Energy Site',
-        devices,
-        updatedAt: new Date().toISOString(),
-      };
-      await saveSite(siteData);
+      await saveSite(buildSitePayload(devices));
       alert('Site layout saved successfully!');
     } catch (err: any) {
       alert(`Failed to save: ${err.message}`);
     }
   };
 
+  /**
+   * Loads the most recent site layout from the backend and
+   * restores device counts from it.
+   */
   const loadLatestSite = useCallback(async () => {
     try {
       const result = await getSites();
-      if (result && result.sites && result.sites.length > 0) {
-        const latest = result.sites[0];
-        // Restore counts from the loaded layout
-        const newCounts: DeviceCounts = {
-          [DeviceType.MEGAPACK_XL]: latest.devices.filter((d: any) => d.type === DeviceType.MEGAPACK_XL).length,
-          [DeviceType.MEGAPACK_2]: latest.devices.filter((d: any) => d.type === DeviceType.MEGAPACK_2).length,
-          [DeviceType.MEGAPACK]: latest.devices.filter((d: any) => d.type === DeviceType.MEGAPACK).length,
-          [DeviceType.POWERPACK]: latest.devices.filter((d: any) => d.type === DeviceType.POWERPACK).length,
-        };
-        (Object.entries(newCounts) as [keyof DeviceCounts, number][]).forEach(([type, count]) => {
+      if (result?.sites?.length) {
+        const restoredCounts = parseSiteLayoutToCounts(result.sites[0]);
+        (Object.entries(restoredCounts) as [keyof DeviceCounts, number][]).forEach(([type, count]) => {
           updateCount(type, count);
         });
       }
@@ -119,7 +129,7 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
               <div key={type} className={styles.deviceItem}>
                 <div className={styles.deviceHeader}>
                   <label htmlFor={inputId}>{t(`device.${type.toLowerCase()}`)}</label>
-                  <span className={styles.price}>${DEVICE_PROPERTIES[type as DeviceType].cost.toLocaleString()}</span>
+                  <span className={styles.price}>${DEVICE_PROPERTIES[type as keyof typeof DEVICE_PROPERTIES].cost.toLocaleString()}</span>
                 </div>
                 <input
                   id={inputId}

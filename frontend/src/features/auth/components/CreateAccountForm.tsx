@@ -7,6 +7,17 @@ import { API_ENDPOINTS } from '../../../config/api.config';
 import { CreateAccountFormProps } from '../../../types/auth.types';
 import styles from '../styles/Auth.module.css';
 
+/**
+ * Account creation form for new users.
+ *
+ * Collects full name, username, and password, then calls the user creation
+ * API endpoint. On success, invokes `onCreateSuccess` to switch to login.
+ *
+ * @param props.onCreateSuccess - Callback with optional token on successful creation.
+ * @param props.onSwitchToLogin - Callback to navigate back to the login view.
+ * @param props.onError         - Callback with error message string on failure.
+ * @returns A styled signup form.
+ */
 export const CreateAccountForm = ({ onCreateSuccess, onSwitchToLogin, onError }: CreateAccountFormProps) => {
   const { t } = useLanguage();
 
@@ -16,6 +27,11 @@ export const CreateAccountForm = ({ onCreateSuccess, onSwitchToLogin, onError }:
 
   const { mutate: createUser, loading } = useMutation(API_ENDPOINTS.users.create, 'POST');
 
+  /**
+   * Submits the new account details to the API.
+   *
+   * @param e - The form submission event.
+   */
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {

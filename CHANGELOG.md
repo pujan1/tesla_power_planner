@@ -4,6 +4,23 @@ All notable changes to the Tesla Full-Stack Ecosystem will be documented in this
 
 All format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-04-06 - Thin Components, Thick Helpers & Global Documentation
+
+### Added
+- **Domain-Driven Helpers**: Extracted pure business logic into dedicated helper modules (`packing.helpers.ts`, `site-planner.helpers.ts`, `scene.helpers.ts`).
+- **Canvas Texture Utilities**: Centralized 3D texture generation into `canvas-texture.utils.ts` to eliminate redundancy in `BatteryMesh` and `ParkingMarker`.
+- **Reusable Auth Hook**: Unified session hydration, login/logout state, and error handling into a custom `useAuth.ts` hook.
+- **Click-Outside Detection**: Implemented a global `useClickOutside.ts` hook for industrial UI interactions.
+- **Configuration Registry**: Organized magic strings and numbers into domain-specific constant files (`app.constants.ts`, `site-planner.constants.ts`, `scene.constants.ts`, `canvas.constants.ts`).
+- **Comprehensive JSDoc Documentation**: Applied full industrial-grade JSDoc to every function and component across the entire frontend (26+ files).
+
+### Changed
+- **Architectural Refactor**: Transitioned from monolithic components to a "Thin Component, Thick Helper" pattern, drastically reducing complexity in `App.tsx`, `SitePlanner.tsx`, and `SiteCanvas3D.tsx`.
+- **Test Optimization**: Refactored the test suite to target the new helper modules directly and fixed a pre-existing i18n key mismatch in `App.test.tsx`.
+
+### Fixed
+- **App Test Regressions**: Resolved a pre-existing test failure in `App.test.tsx` by correcting the expected welcome text and adding `waitFor` for async session checks.
+
 ## [1.3.0] - Industrial Modularity & Component Standardization
 
 ### Added

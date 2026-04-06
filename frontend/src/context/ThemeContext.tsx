@@ -9,6 +9,12 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+/**
+ * Hook to access the current theme and setter.
+ *
+ * @throws {Error} If used outside a `ThemeProvider`.
+ * @returns `{ theme, setTheme }` — the current theme and a setter function.
+ */
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (!context) {
@@ -17,6 +23,12 @@ export const useTheme = () => {
   return context;
 };
 
+/**
+ * Context provider that manages the active theme (`'light'` or `'dark'`).
+ * Applies the theme as a CSS class on `document.body`.
+ *
+ * @param props.children - Child components that can consume theme context.
+ */
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [theme, setThemeState] = useState<Theme>('dark');
 

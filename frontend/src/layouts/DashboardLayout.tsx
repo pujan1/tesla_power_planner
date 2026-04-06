@@ -3,10 +3,22 @@ import { useLanguage } from '../context/LanguageContext';
 import styles from './DashboardLayout.module.css';
 
 interface DashboardLayoutProps {
+  /** Main page content rendered below the navbar. */
   children: React.ReactNode;
+  /** Content rendered in the right side of the navbar (e.g., ViewToggle, avatar). */
   navbarContent: React.ReactNode;
 }
 
+/**
+ * Layout wrapper for authenticated dashboard pages.
+ *
+ * Renders a top navbar with the Tesla logo and customizable right-side
+ * content, plus a main content area below.
+ *
+ * @param props.children       - Dashboard page content.
+ * @param props.navbarContent  - Elements rendered in the navbar action area.
+ * @returns A dashboard layout with navbar and content.
+ */
 export const DashboardLayout = ({ children, navbarContent }: DashboardLayoutProps) => {
   const { t } = useLanguage();
   return (

@@ -1,0 +1,60 @@
+import { DeviceType, SiteDevice, SiteLayout } from '@tesla/shared';
+import { DeviceCounts } from '../types/site-planner.types';
+import { MAX_TOTAL_UNITS, DEFAULT_SITE_ID, DEFAULT_SITE_NAME } from '../constants/site-planner.constants';
+
+/**
+ * Checks whether adding `count` units of `type` (plus the resulting
+ * auto-generated transformers) would exceed the site unit limit.
+ *
+ * @param counts - Current device counts (batteries only).
+ * @param type   - The device type being modified.
+ * @param count  - The proposed new count for that device type.
+ * @returns `true` if the total units would stay at or below `MAX_TOTAL_UNITS`.
+ *
+ * @example
+ * ```ts
+ * canAddDevices(currentCounts, DeviceType.MEGAPACK, 5); // => true/false
+ * ```
+ */
+export const canAddDevices = (
+  counts: DeviceCounts,
+  type: keyof DeviceCounts,
+  count: number
+): boolean => {
+  const otherUnits = (Object.entries(counts) as [keyof DeviceCounts, number][])
+    .filter(([t]) => t !== type)
+    .reduce((acc, [_, c]) => acc + c, 0);
+
+  const newBatteryTotal = otherUnits + count;
+  const newTransformerTotal = Math.ceil(newBatteryTotal / 2);
+  const totalUnits = newBatteryTotal + newTransformerTotal;
+
+  return totalUnits <= MAX_TOTAL_UNITS;
+};
+
+/**
+ * Builds a `SiteLayout` payload ready for API persistence.
+ *
+ * @param devices - The current array of placed `SiteDevice` objects.
+ * @returns A `SiteLayout` object with a default ID, name, and timestamp.
+ */
+export const buildSitePayload = (devices: SiteDevice[]): SiteLayout => ({
+  id: DEFAULT_SITE_ID,
+  name: DEFAULT_SITE_NAME,
+  devices,
+  updatedAt: new Date().toISOString(),
+});
+
+/**
+ * Transforms a loaded `SiteLayout` back into `DeviceCounts` by
+ * counting devices of each battery type.
+ *
+ * @param layout - The `SiteLayout` loaded from the API.
+ * @returns A `DeviceCounts` record mapping each battery type to its count.
+ */
+export const parseSiteLayoutToCounts = (layout: SiteLayout): DeviceCounts => ({
+  [DeviceType.MEGAPACK_XL]: layout.devices.filter(d => d.type === DeviceType.MEGAPACK_XL).length,
+  [DeviceType.MEGAPACK_2]: layout.devices.filter(d => d.type === DeviceType.MEGAPACK_2).length,
+  [DeviceType.MEGAPACK]: layout.devices.filter(d => d.type === DeviceType.MEGAPACK).length,
+  [DeviceType.POWERPACK]: layout.devices.filter(d => d.type === DeviceType.POWERPACK).length,
+});

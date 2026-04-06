@@ -1,10 +1,16 @@
+/**
+ * @module App.test
+ * Smoke test for the root App component.
+ * Verifies the login form renders in the default LOGIN view.
+ */
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import App from './App';
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
 
-test('renders login welcome message', () => {
+/** Verifies that the App renders the login form after session check completes. */
+test('renders login form on initial load', async () => {
   render(
     <ThemeProvider>
       <LanguageProvider>
@@ -13,7 +19,9 @@ test('renders login welcome message', () => {
     </ThemeProvider>
   );
   
-  // App starts in LOGIN view by default
-  const welcomeText = screen.getByText(/Welcome Back/i);
-  expect(welcomeText).toBeInTheDocument();
+  // Wait for the async session hydration to complete
+  await waitFor(() => {
+    const loginText = screen.getByText(/Please login to configure/i);
+    expect(loginText).toBeInTheDocument();
+  });
 });

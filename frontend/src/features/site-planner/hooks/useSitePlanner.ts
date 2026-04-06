@@ -1,9 +1,27 @@
 import { useMemo, useState, useCallback } from 'react';
-import { DeviceType, SiteDevice } from '@tesla/shared';
+import { DeviceType } from '@tesla/shared';
 
-import { DEVICE_PROPERTIES } from '../constants/device.constants';
 import { DeviceCounts } from '../types/site-planner.types';
+import { packDevices, computeSiteStats } from '../helpers/packing.helpers';
 
+/**
+ * Core state management hook for the site planner.
+ *
+ * Manages device counts, runs the packing algorithm, and computes
+ * aggregate statistics whenever counts change.
+ *
+ * @returns An object containing:
+ *  - `counts`      — Current `DeviceCounts` for each battery type.
+ *  - `updateCount` — Callback to update the count for a specific device type.
+ *  - `devices`     — Array of `SiteDevice` objects with computed positions.
+ *  - `stats`       — Aggregate `SiteStats` (cost, energy, area, dimensions).
+ *
+ * @example
+ * ```tsx
+ * const { counts, updateCount, devices, stats } = useSitePlanner();
+ * updateCount(DeviceType.MEGAPACK, 3);
+ * ```
+ */
 export const useSitePlanner = () => {
   const [counts, setCounts] = useState<DeviceCounts>({
     [DeviceType.MEGAPACK_XL]: 0,
@@ -12,11 +30,19 @@ export const useSitePlanner = () => {
     [DeviceType.POWERPACK]: 0,
   });
 
+  /**
+   * Updates the count for a specific battery device type.
+   * Clamps the value to a minimum of 0.
+   *
+   * @param type  - The `DeviceCounts` key to update.
+   * @param count - The new count value (will be clamped to ≥ 0).
+   */
   const updateCount = useCallback((type: keyof DeviceCounts, count: number) => {
     setCounts(prev => ({ ...prev, [type]: Math.max(0, count) }));
   }, []);
 
   const { devices, stats } = useMemo(() => {
+    // Expand counts into an ordered list of battery device types
     const batteryList: DeviceType[] = [];
     Object.entries(counts).forEach(([type, count]) => {
       for (let i = 0; i < count; i++) {
@@ -26,83 +52,23 @@ export const useSitePlanner = () => {
 
     const totalBatteries = batteryList.length;
     const transformerCount = Math.ceil(totalBatteries / 2);
-    
-    // Create full list of devices to pack
+
+    // Append auto-generated transformers
     const allDevicesToPack: DeviceType[] = [...batteryList];
     for (let i = 0; i < transformerCount; i++) {
       allDevicesToPack.push(DeviceType.TRANSFORMER);
     }
 
-    const packedDevices: SiteDevice[] = [];
-    const rows: { y: number; height: number; currentX: number }[] = [];
-    const MAX_WIDTH = 100;
+    const packedDevices = packDevices(allDevicesToPack);
+    const stats = computeSiteStats(packedDevices, totalBatteries, transformerCount);
 
-    allDevicesToPack.forEach((type, index) => {
-      const props = DEVICE_PROPERTIES[type];
-      
-      // Find the first row where this device fits horizontally
-      let targetRow = rows.find(r => r.currentX + props.width <= MAX_WIDTH);
-      
-      if (!targetRow) {
-        // Start a new row below the last one
-        const lastRow = rows[rows.length - 1];
-        const newY = lastRow ? lastRow.y + lastRow.height + 10 : 0;
-        
-        targetRow = {
-          y: newY,
-          height: props.length,
-          currentX: 0
-        };
-        rows.push(targetRow);
-      } else {
-        // If the NEW device is taller than current row max, we'd technically need to shift 
-        // subsequent rows. But since all current equipment is 10ft, we'll keep it simple:
-        targetRow.height = Math.max(targetRow.height, props.length);
-      }
-
-      packedDevices.push({
-        id: `${type}-${index}`,
-        type,
-        x: targetRow.currentX,
-        y: targetRow.y,
-      });
-
-      targetRow.currentX += props.width + 10;
-    });
-
-    // Calculate stats based on actual packed bounds
-    let totalCost = 0;
-    let totalEnergy = 0;
-    let maxWidthUsed = 0;
-    let maxHeightUsed = 0;
-
-    packedDevices.forEach(d => {
-      const p = DEVICE_PROPERTIES[d.type];
-      totalCost += p.cost;
-      totalEnergy += p.energy;
-      maxWidthUsed = Math.max(maxWidthUsed, d.x + p.width);
-      maxHeightUsed = Math.max(maxHeightUsed, d.y + p.length);
-    });
-
-    const totalLengthUsed = maxHeightUsed;
-
-    return {
-      devices: packedDevices,
-      stats: {
-        totalCost,
-        totalEnergy,
-        totalArea: maxWidthUsed * totalLengthUsed,
-        dimensions: { width: maxWidthUsed, length: totalLengthUsed },
-        transformerCount,
-        batteryCount: totalBatteries
-      }
-    };
+    return { devices: packedDevices, stats };
   }, [counts]);
 
   return {
     counts,
     updateCount,
     devices,
-    stats
+    stats,
   };
 };

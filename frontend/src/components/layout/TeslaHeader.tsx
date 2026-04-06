@@ -1,5 +1,12 @@
 import styles from './TeslaHeader.module.css';
 
+/**
+ * Global header component displaying the Tesla wordmark SVG logo.
+ *
+ * Used in the unauthenticated `MainLayout` across all landing pages.
+ *
+ * @returns A `<header>` element with the Tesla logo.
+ */
 export const TeslaHeader = () => {
   return (
     <header className={styles.header}>

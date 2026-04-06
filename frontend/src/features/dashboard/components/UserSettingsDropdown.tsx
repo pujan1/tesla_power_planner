@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { useLanguage } from '../../../context/LanguageContext';
 import { useTheme, Theme } from '../../../context/ThemeContext';
 import { Language } from '../../../i18n/locales';
@@ -7,8 +7,26 @@ import { Input } from '../../../components/ui/Input';
 import { useMutation } from '../../../hooks/useApi';
 import { API_ENDPOINTS } from '../../../config/api.config';
 import { UserSettingsDropdownProps } from '../../../types/dashboard.types';
+import { useClickOutside } from '../../../hooks/useClickOutside';
 import styles from '../styles/Dashboard.module.css';
 
+/**
+ * Dropdown menu for user settings, accessible from the dashboard navbar.
+ *
+ * Provides:
+ * - Avatar button showing user initials
+ * - Language and theme selectors (persisted to backend)
+ * - Name and password update form
+ * - Logout button
+ *
+ * Closes automatically when clicking outside the dropdown.
+ *
+ * @param props.currentUser    - The authenticated user object.
+ * @param props.onLogout       - Callback invoked when the user logs out.
+ * @param props.onUpdateSuccess - Callback invoked with the updated user after a settings save.
+ * @param props.onError        - Callback invoked with an error message string.
+ * @returns The avatar button and conditionally-rendered dropdown panel.
+ */
 export const UserSettingsDropdown = ({ currentUser, onLogout, onUpdateSuccess, onError }: UserSettingsDropdownProps) => {
   const { language, setLanguage, t } = useLanguage();
   const { theme, setTheme } = useTheme();
@@ -22,23 +40,18 @@ export const UserSettingsDropdown = ({ currentUser, onLogout, onUpdateSuccess, o
   const { mutate: updateUser, loading } = useMutation(endpoint, 'PUT');
   const { mutate: updateConfig } = useMutation(endpoint, 'PUT');
 
-  // Handle click outside to close
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen]);
+  /** Close the dropdown when clicking outside. */
+  const closeDropdown = useCallback(() => setIsOpen(false), []);
+  useClickOutside(wrapperRef as React.RefObject<HTMLElement>, closeDropdown, isOpen);
 
+  /** User initials derived from the full name (max 2 characters). */
   const initials = currentUser.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
+  /**
+   * Submits name/password updates to the backend.
+   *
+   * @param e - The form submission event.
+   */
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -52,6 +65,11 @@ export const UserSettingsDropdown = ({ currentUser, onLogout, onUpdateSuccess, o
     }
   };
 
+  /**
+   * Handles language preference changes and persists to backend.
+   *
+   * @param e - The select change event.
+   */
   const handleLanguageChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newLang = e.target.value as Language;
     setLanguage(newLang);
@@ -62,6 +80,11 @@ export const UserSettingsDropdown = ({ currentUser, onLogout, onUpdateSuccess, o
     }
   };
 
+  /**
+   * Handles theme preference changes and persists to backend.
+   *
+   * @param e - The select change event.
+   */
   const handleThemeChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newTheme = e.target.value as Theme;
     setTheme(newTheme);
@@ -135,4 +158,3 @@ export const UserSettingsDropdown = ({ currentUser, onLogout, onUpdateSuccess, o
     </>
   );
 };
-

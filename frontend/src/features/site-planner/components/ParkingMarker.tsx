@@ -1,39 +1,26 @@
 import { useMemo } from 'react';
-import * as THREE from 'three';
 import { Line } from '@react-three/drei';
+import { createParkingTexture } from '../utils/canvas-texture.utils';
 
 interface ParkingMarkerProps {
+  /** Horizontal offset in feet from the parking group origin. */
   offset: number;
 }
 
+/**
+ * 3D parking bay marker for the engineer parking area.
+ *
+ * Renders:
+ * - A translucent rectangular bay surface
+ * - A solid white border frame
+ * - A circular "P" symbol texture on the ground
+ *
+ * @param props.offset - Horizontal offset in feet for this bay's position.
+ * @returns A Three.js fragment containing the parking bay elements.
+ */
 export const ParkingMarker = ({ offset }: ParkingMarkerProps) => {
-  const pTexture = useMemo(() => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 256;
-    canvas.height = 256;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      // High-Contrast industrial backing (Dark Circle)
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-      ctx.beginPath();
-      ctx.arc(128, 128, 110, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // White stroke
-      ctx.strokeStyle = 'white';
-      ctx.lineWidth = 12;
-      ctx.stroke();
-
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = 'white';
-      ctx.font = 'bold 140px "Inter", sans-serif';
-      ctx.fillText('P', 128, 128);
-    }
-    const tex = new THREE.CanvasTexture(canvas);
-    tex.needsUpdate = true;
-    return tex;
-  }, []);
+  /** Cached parking "P" texture — only created once per component instance. */
+  const pTexture = useMemo(() => createParkingTexture(), []);
 
   return (
     <>
@@ -53,13 +40,10 @@ export const ParkingMarker = ({ offset }: ParkingMarkerProps) => {
         transparent={false}
       />
 
-      {/* Parking 'P' Symbol (High-Contrast "Pop") */}
+      {/* Parking 'P' Symbol */}
       <mesh position={[offset, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[12, 12]} />
-        <meshBasicMaterial 
-          transparent 
-          map={pTexture} 
-        />
+        <meshBasicMaterial transparent map={pTexture} />
       </mesh>
     </>
   );

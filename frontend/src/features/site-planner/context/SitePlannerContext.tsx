@@ -7,6 +7,11 @@ interface SitePlannerContextType {
 
 const SitePlannerContext = createContext<SitePlannerContextType | undefined>(undefined);
 
+/**
+ * Context provider for the site planner's global UI state (e.g., 2D/3D toggle).
+ *
+ * @param props.children - Child components that can consume planner context.
+ */
 export const SitePlannerProvider = ({ children }: { children: ReactNode }) => {
   const [is3D, setIs3D] = useState(false);
 
@@ -17,6 +22,12 @@ export const SitePlannerProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+/**
+ * Hook to access the site planner's global UI state (`is3D`, `setIs3D`).
+ *
+ * @throws {Error} If used outside a `SitePlannerProvider`.
+ * @returns `{ is3D, setIs3D }` — the current view mode and its setter.
+ */
 export const useSitePlannerContext = () => {
   const context = useContext(SitePlannerContext);
   if (context === undefined) {

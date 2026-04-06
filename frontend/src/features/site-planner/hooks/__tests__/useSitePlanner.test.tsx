@@ -1,3 +1,9 @@
+/**
+ * @module useSitePlanner.test
+ * Unit tests for the useSitePlanner hook.
+ * Verifies hook initialization, state updates, layout packing, and 
+ * statistics calculation.
+ */
 import { renderHook, act } from '@testing-library/react';
 import { useSitePlanner } from '../useSitePlanner';
 import { DeviceType } from '@tesla/shared';
