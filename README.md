@@ -1,5 +1,9 @@
 # Tesla Energy Site Layout Planner
 
+## 🔗 Live Deployment
+The latest production build is accessible at:
+[**https://tesla-dashboard-lqcu.onrender.com/**](https://tesla-dashboard-lqcu.onrender.com/)
+
 An industrial-grade, full-stack application for utility-scale battery deployment planning. This ecosystem enables energy engineers to architect, optimize, and visualize Megapack and Powerpack sites with high-fidelity 2D/3D interfaces and an intelligent hardware packing engine.
 
 ![Site Planner 3D Visualization](docs/assets/3d_view_main.png)
@@ -73,10 +77,6 @@ npm run test:e2e
 - 🇺🇸 English
 - 🇪🇸 Spanish
 - 🇫🇷 French
-
-## 🔗 Live Deployment
-The latest production build is accessible at:
-[**https://tesla-dashboard-lqcu.onrender.com/**](https://tesla-dashboard-lqcu.onrender.com/)
 
 ---
 
