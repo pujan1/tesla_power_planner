@@ -83,21 +83,72 @@
   font-family: 'Roboto Mono', monospace;
 }
 
-.deviceItem input {
+.stepperWrapper {
+  display: flex;
+  align-items: center;
   background: var(--input-bg);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  padding: 0.8rem 1rem;
-  color: var(--text-primary);
-  font-size: 1rem;
-  outline: none;
+  overflow: hidden;
   transition: all 0.2s ease;
 }
 
-.deviceItem input:focus {
+.stepperWrapper:focus-within {
   border-color: #3e94ff;
   background: rgba(62, 148, 255, 0.05);
+  box-shadow: 0 0 0 1px rgba(62, 148, 255, 0.2);
 }
+
+.stepperInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 0.8rem 0;
+  color: var(--text-primary);
+  font-size: 1rem;
+  text-align: center;
+  outline: none;
+  width: 100%;
+}
+
+/* Hide Spinners - Chrome, Safari, Edge, Opera */
+.stepperInput::-webkit-outer-spin-button,
+.stepperInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+/* Hide Spinners - Firefox */
+.stepperInput[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+
+.stepBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  padding: 0 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stepBtn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.stepBtn:active {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(0.95);
+}
+
 
 .statsSection {
   display: grid;
@@ -122,41 +173,6 @@
   letter-spacing: 1px;
   color: var(--text-secondary);
   font-weight: 700;
-}
-
-.statCard .value {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.saveBtn {
-  margin-top: 1rem;
-  padding: 1.1rem;
-  background: var(--text-primary);
-  color: var(--bg-primary);
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 1rem;
-  transition: all 0.2s ease;
-}
-
-.saveBtn:hover {
-  background: #eee;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
-}
-
-.saveBtn:disabled {
-  background: #333;
-  color: #666;
-  cursor: not-allowed;
-}
-
-.saveBtn:active {
-  transform: translateY(0);
 }
 
 /* Responsive Mobile Layout Refinements */
@@ -189,10 +205,11 @@
     font-size: 0.9rem;
   }
 
-  .deviceItem input {
-    padding: 1rem;
+  .stepperInput {
+    padding: 1rem 0;
     font-size: 1.1rem;
   }
+
 
   .statsSection {
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -206,13 +223,8 @@
   .statCard .value {
     font-size: 1.1rem;
   }
-
-  .saveBtn {
-    margin-top: 2rem;
-    padding: 1.3rem;
-    width: 100%;
-  }
 }
+
 
 @media (max-width: 480px) {
   .statsSection {

@@ -11,9 +11,11 @@
 }
 
 .success {
-  background: rgba(46, 204, 113, 0.9);
+  background: rgba(62, 148, 255, 0.9);
   color: white;
+  box-shadow: 0 10px 30px rgba(62, 148, 255, 0.3);
 }
+
 
 .error {
   background: rgba(231, 76, 60, 0.9);

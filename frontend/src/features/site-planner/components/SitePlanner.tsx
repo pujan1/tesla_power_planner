@@ -4,6 +4,7 @@ import { useSitePlanner } from '../hooks/useSitePlanner';
 import { SiteCanvas } from './SiteCanvas';
 import { SiteCanvas3D } from './SiteCanvas3D';
 import { SalesModal } from './SalesModal';
+import { Toast } from '../../../components/ui/Toast';
 import { useMutation, useQuery } from '../../../hooks/useApi';
 import { API_ENDPOINTS } from '../../../config/api.config';
 import { User, SiteLayout } from '@tesla/shared';
@@ -29,6 +30,8 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
 
   const [showSalesModal, setShowSalesModal] = useState(false);
   const [lastSafeCounts, setLastSafeCounts] = useState<DeviceCounts | null>(null);
+  const [showAutoSaveToast, setShowAutoSaveToast] = useState(false);
+
 
   const { mutate: saveSite, loading: saving } = useMutation(API_ENDPOINTS.auth.me.replace('/auth/me', '/auth/sites'), 'POST');
   const { fetchResource: getSites } = useQuery<{ sites: SiteLayout[] }>(API_ENDPOINTS.auth.me.replace('/auth/me', '/auth/sites'));
@@ -75,16 +78,25 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
   };
 
   /**
-   * Persists the current device layout to the backend.
+   * Automatically persists the current device layout to the backend with a debounce.
    */
-  const handleSave = async () => {
-    try {
-      await saveSite(buildSitePayload(devices));
-      alert('Site layout saved successfully!');
-    } catch (err: any) {
-      alert(`Failed to save: ${err.message}`);
-    }
-  };
+  useEffect(() => {
+    if (devices.length === 0) return;
+    
+    const timeoutId = setTimeout(async () => {
+      try {
+        setShowAutoSaveToast(true);
+        await saveSite(buildSitePayload(devices));
+      } catch (err) {
+        console.error('Auto-save failed:', err);
+        setShowAutoSaveToast(false);
+      }
+    }, 2000);
+
+    return () => clearTimeout(timeoutId);
+  }, [devices, saveSite]);
+
+
 
   /**
    * Loads the most recent site layout from the backend and
@@ -123,27 +135,17 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
         </h3>
 
         <div className={styles.deviceControls}>
-          {(Object.keys(counts) as (keyof DeviceCounts)[]).map((type) => {
-            const inputId = `input-${type.toLowerCase()}`;
-            return (
-              <div key={type} className={styles.deviceItem}>
-                <div className={styles.deviceHeader}>
-                  <label htmlFor={inputId}>{t(`device.${type.toLowerCase()}`)}</label>
-                  <span className={styles.price}>${DEVICE_PROPERTIES[type as keyof typeof DEVICE_PROPERTIES].cost.toLocaleString()}</span>
-                </div>
-                <input
-                  id={inputId}
-                  type="number"
-                  min="0"
-                  value={counts[type]}
-                  onChange={(e) => handleUpdateCount(type, parseInt(e.target.value) || 0)}
-                  data-testid={`device-input-${type.toLowerCase()}`}
-                  aria-label={`${t(`device.${type.toLowerCase()}`)} count`}
-                />
-              </div>
-            );
-          })}
+          {(Object.keys(counts) as (keyof DeviceCounts)[]).map((type) => (
+            <DeviceInput
+              key={type}
+              type={type}
+              count={counts[type]}
+              onUpdate={handleUpdateCount}
+              t={t}
+            />
+          ))}
         </div>
+
 
         <div className={styles.statsSection} aria-live="polite" aria-label="Site Statistics">
           <div className={styles.statCard}>
@@ -170,15 +172,17 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
           </div>
         </div>
 
-        <button
-          className={styles.saveBtn}
-          onClick={handleSave}
-          disabled={saving}
-          data-testid="save-layout-btn"
-        >
-          {saving ? t('site.saving') : t('site.save')}
-        </button>
+
+        {showAutoSaveToast && (
+          <Toast 
+            message={t('site.saving')} 
+            type="success"
+            onClose={() => setShowAutoSaveToast(false)}
+          />
+        )}
+
       </aside>
+
 
       {is3D ? (
         <SiteCanvas3D devices={devices} dimensions={stats.dimensions} />
@@ -195,3 +199,83 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
     </div>
   );
 };
+
+/**
+ * Custom number input with +/- steppers and local string state management.
+ * Fixes the "sticky zero" bug and provides a premium Tesla-like feel.
+ */
+const DeviceInput = ({ type, count, onUpdate, t }: { 
+  type: keyof DeviceCounts, 
+  count: number, 
+  onUpdate: (type: keyof DeviceCounts, val: number) => void,
+  t: (key: string) => string 
+}) => {
+  const [localVal, setLocalVal] = useState(count.toString());
+
+  // Sync local value if count is updated externally (e.g. session load)
+  useEffect(() => {
+    setLocalVal(count.toString());
+  }, [count]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    
+    // Allow empty string while typing
+    if (val === '') {
+      setLocalVal('');
+      return;
+    }
+
+    const num = parseInt(val);
+    if (!isNaN(num) && num >= 0) {
+      setLocalVal(num.toString());
+      onUpdate(type, num);
+    }
+  };
+
+  const handleStep = (delta: number) => {
+    const next = Math.max(0, count + delta);
+    setLocalVal(next.toString());
+    onUpdate(type, next);
+  };
+
+  const inputId = `input-${type.toLowerCase()}`;
+
+  return (
+    <div className={styles.deviceItem}>
+      <div className={styles.deviceHeader}>
+        <label htmlFor={inputId}>{t(`device.${type.toLowerCase()}`)}</label>
+        <span className={styles.price}>
+          ${DEVICE_PROPERTIES[type as keyof typeof DEVICE_PROPERTIES].cost.toLocaleString()}
+        </span>
+      </div>
+      <div className={styles.stepperWrapper}>
+        <button 
+          className={styles.stepBtn} 
+          onClick={() => handleStep(-1)}
+          aria-label={`Decrease ${t(`device.${type.toLowerCase()}`)}`}
+        >
+          -
+        </button>
+        <input
+          id={inputId}
+          type="number"
+          className={styles.stepperInput}
+          value={localVal}
+          onChange={handleChange}
+          data-testid={`device-input-${type.toLowerCase()}`}
+          aria-label={`${t(`device.${type.toLowerCase()}`)} count`}
+          placeholder="0"
+        />
+        <button 
+          className={styles.stepBtn} 
+          onClick={() => handleStep(1)}
+          aria-label={`Increase ${t(`device.${type.toLowerCase()}`)}`}
+        >
+          +
+        </button>
+      </div>
+    </div>
+  );
+};
+

@@ -86,7 +86,6 @@ export const useAuth = (t: (key: string) => string) => {
    */
   const handleError = useCallback((msg: string) => {
     setError(msg);
-    setTimeout(() => setError(''), ERROR_TIMEOUT_MS);
   }, []);
 
   /** Clears both the success message and error message. */
@@ -115,7 +114,6 @@ export const useAuth = (t: (key: string) => string) => {
   const handleUpdateSuccess = useCallback((user: User) => {
     setCurrentUser(user);
     setMessage(t('msg.updated'));
-    setTimeout(() => setMessage(''), MESSAGE_TIMEOUT_MS);
   }, [t]);
 
   return {
