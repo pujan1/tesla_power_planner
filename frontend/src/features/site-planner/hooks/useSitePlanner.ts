@@ -4,6 +4,7 @@ import { DeviceType, SiteDevice } from '@tesla/shared';
 import { DeviceCounts } from '../types/site-planner.types';
 import { packDevices, computeSiteStats } from '../helpers/packing.helpers';
 import { useSitePlannerContext } from '../context/SitePlannerContext';
+import { expandCountsToList } from '../helpers/site-planner.helpers';
 
 
 /**
@@ -80,20 +81,7 @@ export const useSitePlanner = () => {
    * Resets manual layout to a clean auto-packed arrangement.
    */
   const autoArrangeLayout = useCallback(() => {
-    const batteryList: DeviceType[] = [];
-    Object.entries(counts).forEach(([type, count]) => {
-      for (let i = 0; i < count; i++) {
-        batteryList.push(type as DeviceType);
-      }
-    });
-
-    const totalBatteries = batteryList.length;
-    const transformerCount = Math.ceil(totalBatteries / 2);
-    const allDevicesToPack: DeviceType[] = [...batteryList];
-    for (let i = 0; i < transformerCount; i++) {
-      allDevicesToPack.push(DeviceType.TRANSFORMER);
-    }
-
+    const allDevicesToPack = expandCountsToList(counts);
     setManualDevices(packDevices(allDevicesToPack));
   }, [counts]);
 
@@ -108,17 +96,22 @@ export const useSitePlanner = () => {
       d.type === DeviceType.MEGAPACK
     ).length;
     const powerpacks = currentDevices.filter(d => d.type === DeviceType.POWERPACK).length;
-    const required = Math.ceil(megapacks / 4 + powerpacks / 16);
+    // Align with latest requirement: 1 Transformer for every 2 batteries
+    const required = Math.ceil((megapacks + powerpacks) / 2);
     
     const existingTransformers = currentDevices.filter(d => d.type === DeviceType.TRANSFORMER);
     const existingCount = existingTransformers.length;
 
     if (existingCount < required) {
-      // Add missing transformer at bottom right of current bounds
-      const maxX = Math.max(...currentDevices.map(d => d.x), 50);
-      const maxY = Math.max(...currentDevices.map(d => d.y), 0);
-      const newId = `${DeviceType.TRANSFORMER}-${Date.now()}`;
-      return [...currentDevices, { id: newId, type: DeviceType.TRANSFORMER, x: maxX + 10, y: maxY }];
+      // Add missing transformer near the last added device to keep it in context
+      const lastDevice = currentDevices[currentDevices.length - 1];
+      const newId = `Transformer-${Date.now()}`;
+      
+      // Place it to the right of the last device, or below if it would be "outside"
+      const newX = lastDevice.x + 40; 
+      const newY = lastDevice.y;
+
+      return [...currentDevices, { id: newId, type: DeviceType.TRANSFORMER, x: newX, y: newY }];
     } else if (existingCount > required) {
       // Remove excess transformer (last one added)
       const lastTransformer = existingTransformers[existingCount - 1];
@@ -181,35 +174,18 @@ export const useSitePlanner = () => {
 
 
   const { devices, stats } = useMemo(() => {
-    // Expand counts into an ordered list of battery device types
-    const batteryList: DeviceType[] = [];
-    Object.entries(counts).forEach(([type, count]) => {
-      for (let i = 0; i < count; i++) {
-        batteryList.push(type as DeviceType);
-      }
-    });
+    // Use unified helper to generate the interleaved device types
+    const allDevicesToPack = expandCountsToList(counts);
 
-    const megapacks = batteryList.filter(type => 
-      type === DeviceType.MEGAPACK_XL || 
-      type === DeviceType.MEGAPACK_2 || 
-      type === DeviceType.MEGAPACK
-    ).length;
-    const powerpacks = batteryList.filter(type => type === DeviceType.POWERPACK).length;
-    const transformerCount = Math.ceil(megapacks / 4 + powerpacks / 16);
-
-
-    // Append auto-generated transformers
-    const allDevicesToPack: DeviceType[] = [...batteryList];
-    for (let i = 0; i < transformerCount; i++) {
-      allDevicesToPack.push(DeviceType.TRANSFORMER);
-    }
+    // Calculate transformer count for stats (matching the expanded list)
+    const transformerCount = allDevicesToPack.filter(t => t === DeviceType.TRANSFORMER).length;
 
     const packedDevices = packDevices(allDevicesToPack);
     const resolvedDevices = hasCustomLayout ? manualDevices : packedDevices;
 
     const stats = computeSiteStats(
       resolvedDevices, 
-      batteryList.length, 
+      allDevicesToPack.length - transformerCount, 
       transformerCount
     );
 

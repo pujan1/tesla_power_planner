@@ -20,46 +20,46 @@ describe('useSitePlanner Packing Optimization', () => {
 
     const devices = result.current.devices;
     
-    // Total batteries = 4, so Transformers = ceil(4/4) = 1
+    // Total batteries = 4, so Transformers = ceil(4 / 2) = 2
     expect(result.current.stats.batteryCount).toBe(4);
-    expect(result.current.stats.transformerCount).toBe(1);
-    expect(result.current.devices.length).toBe(5);
+    expect(result.current.stats.transformerCount).toBe(2);
+    expect(result.current.devices.length).toBe(6);
 
     // Filter by type
     const mps = devices.filter(d => d.type === DeviceType.MEGAPACK);
     const trs = devices.filter(d => d.type === DeviceType.TRANSFORMER);
 
-    // MP1: x=0, MP2: x=40, TR1: x=80, TR2: x=90
-    // Row 2 (y=20): MP3, MP4
-    // MP3: x=0, MP4: x=40
+    // With 1:2 interspersed logic: [TR1, MP1, MP2, TR2, MP3, MP4]
+    // Row 1 (y=0): TR1 (x=0), MP1 (x=20), MP2 (x=60) -> Total width: 100
+    // Row 2 (y=20): TR2 (x=0), MP3 (x=20), MP4 (x=60)
 
     const rowOffsets = Array.from(new Set(devices.map(d => d.y))).sort((a, b) => a - b);
+    expect(rowOffsets.length).toBe(2);
     
-    // BUG REPRODUCTION: Currently this might be 3 rows
-    expect(rowOffsets.length).toBeLessThanOrEqual(2);
-    
-    // Verify that the Transformer is on Row 1 (y=0)
-    const firstTR = trs[0];
-    expect(firstTR.y).toBe(0);
+    // Verify that the first device is a Transformer
+    expect(devices[0].type).toBe(DeviceType.TRANSFORMER);
+    expect(devices[0].x).toBe(0);
+    expect(devices[0].y).toBe(0);
+
+    // Verify that the fourth device is the second Transformer (interspersed every 2 batteries)
+    expect(devices[3].type).toBe(DeviceType.TRANSFORMER);
+    expect(devices[3].y).toBe(20);
   });
 
 
-  it('should fill gaps in earlier rows with smaller units (First-Fit)', () => {
+  it('should intersperse transformers every 2 units', () => {
     const { result } = renderHook(() => useSitePlanner(), { wrapper: SitePlannerProvider });
     
     act(() => {
-      // Megapack (30ft)
-      result.current.updateCount(DeviceType.MEGAPACK, 1);
-      // Powerpack (10ft)
-      result.current.updateCount(DeviceType.POWERPACK, 1);
+      // 3 Megapacks -> should trigger 2 Transformers
+      result.current.updateCount(DeviceType.MEGAPACK, 3);
     });
 
-    // 1nd Battery (MP): x=0, nextX=40
-    // 2nd Battery (PP): x=40, nextX=60
-    // Transformers (ceil(2/2) = 1): x=60, nextX=80
-    // All 3 should be on Row 1 (80 <= 100)
-
-    const row1Devices = result.current.devices.filter(d => d.y === 0);
-    expect(row1Devices.length).toBe(3); 
+    // Strategy: [T1, MP1, MP2, T2, MP3]
+    expect(result.current.stats.transformerCount).toBe(2);
+    
+    const devices = result.current.devices;
+    expect(devices[0].type).toBe(DeviceType.TRANSFORMER); // 1st T
+    expect(devices[3].type).toBe(DeviceType.TRANSFORMER); // 2nd T (after 2 batteries)
   });
 });

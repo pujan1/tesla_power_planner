@@ -27,6 +27,7 @@ export const canAddDevices = (
     .reduce((acc, [_, c]) => acc + c, 0);
 
   const newBatteryTotal = otherUnits + count;
+  // Align with latest requirement: 1 Transformer for every 2 batteries
   const newTransformerTotal = Math.ceil(newBatteryTotal / 2);
   const totalUnits = newBatteryTotal + newTransformerTotal;
 
@@ -72,10 +73,19 @@ export const expandCountsToList = (counts: DeviceCounts): DeviceType[] => {
   });
 
   const totalBatteries = batteryList.length;
+  // Align with latest requirement (1:2 ratio)
   const transformerCount = Math.ceil(totalBatteries / 2);
-  const allDevicesToPack: DeviceType[] = [...batteryList];
-  for (let i = 0; i < transformerCount; i++) {
-    allDevicesToPack.push(DeviceType.TRANSFORMER);
+  
+  const allDevicesToPack: DeviceType[] = [];
+  let trAdded = 0;
+
+  // Intersperse: Add a transformer every 2 batteries.
+  for (let i = 0; i < batteryList.length; i++) {
+    if (i % 2 === 0 && trAdded < transformerCount) {
+      allDevicesToPack.push(DeviceType.TRANSFORMER);
+      trAdded++;
+    }
+    allDevicesToPack.push(batteryList[i]);
   }
 
   return allDevicesToPack;
