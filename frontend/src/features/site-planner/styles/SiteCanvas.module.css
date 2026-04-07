@@ -219,7 +219,8 @@
 
 /* Mobile Responsiveness (Visualizer) */
 @media (max-width: 1024px) {
-  .canvasContainer {
+  .canvasContainer,
+  .canvas3DHolder {
     height: 50vh;
     min-height: 400px;
     padding: 1.5rem;

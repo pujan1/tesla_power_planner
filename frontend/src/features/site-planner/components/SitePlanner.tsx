@@ -6,6 +6,7 @@ import { SiteCanvas3D } from './SiteCanvas3D';
 import { SalesModal } from './SalesModal';
 import { SubmissionSuccess } from './SubmissionSuccess';
 import { Toast } from '../../../components/ui/Toast';
+import { useMediaQuery } from '../../../hooks/useMediaQuery';
 
 import { useMutation, useQuery } from '../../../hooks/useApi';
 import { API_ENDPOINTS } from '../../../config/api.config';
@@ -31,6 +32,7 @@ import styles from '../styles/SitePlanner.module.css';
 export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
   const { t } = useLanguage();
   const { is3D } = useSitePlannerContext();
+  const isMobile = useMediaQuery('(max-width: 1024px)');
   const { 
     counts, 
     updateCount, 
@@ -231,7 +233,7 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
               <button 
                 className={styles.editBtn} 
                 onClick={handleEditToggle}
-                disabled={is3D}
+                disabled={is3D || isMobile}
               >
                 {t('site.editLayout') || 'Edit Layout'}
               </button>
