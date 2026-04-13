@@ -32,7 +32,7 @@ export function useMutation<TData = any, TVariables = any>(
   const [error, setError] = useState<string | null>(null);
 
   const mutate = useCallback(
-    async (variables: TVariables): Promise<TData> => {
+    async (variables: TVariables, overrideEndpoint?: string): Promise<TData> => {
       setLoading(true);
       setError(null);
       try {
@@ -40,7 +40,8 @@ export function useMutation<TData = any, TVariables = any>(
         const headers: any = { 'Content-Type': 'application/json' };
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        const targetEndpoint = overrideEndpoint || endpoint;
+        const response = await fetch(`${API_BASE_URL}${targetEndpoint}`, {
           method,
           headers,
           body: JSON.stringify(variables),

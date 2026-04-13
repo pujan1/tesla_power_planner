@@ -117,8 +117,8 @@ export const SiteCanvas = ({
       style={{ overflow: 'hidden', position: 'relative', width: '100%', height: '100%' }}
       ref={containerRef}
     >
-      <Suspense fallback={<div style={{ padding: 20 }}>Loading 2D Map...</div>}>
-         <Canvas shadows={false} gl={{ antialias: false }}>
+      <Canvas shadows={false} gl={{ antialias: false }}>
+        <Suspense fallback={null}>
             <SiteCanvas2D 
                devices={devices}
                dimensions={dimensions}
@@ -128,8 +128,8 @@ export const SiteCanvas = ({
                onUpdatePosition={onUpdatePosition}
                theme={theme}
             />
-         </Canvas>
-      </Suspense>
+        </Suspense>
+      </Canvas>
 
       {/* Manual Mode DOM Overlays (Palette & Trash) */}
       {isManualMode && <DevicePalette onStartDrag={handlePaletteStart} />}

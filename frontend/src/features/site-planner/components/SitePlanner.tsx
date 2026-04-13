@@ -62,8 +62,12 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
 
 
 
-  const { mutate: saveSite, loading: saving } = useMutation(API_ENDPOINTS.auth.me.replace('/auth/me', '/auth/sites'), 'POST');
-  const { fetchResource: getSites } = useQuery<{ sites: SiteLayout[] }>(API_ENDPOINTS.auth.me.replace('/auth/me', '/auth/sites'));
+  const [activeSiteId, setActiveSiteId] = useState<string | null>(null);
+  const [availableSites, setAvailableSites] = useState<SiteLayout[]>([]);
+
+  const { mutate: createSiteApi, loading: saving } = useMutation<{site: SiteLayout}>(API_ENDPOINTS.sites.base, 'POST');
+  const { mutate: updateSiteApi } = useMutation<{site: SiteLayout}>(API_ENDPOINTS.sites.base, 'PUT');
+  const { fetchResource: getSites } = useQuery<{ count: number, sites: SiteLayout[] }>(API_ENDPOINTS.sites.base);
 
   /**
    * Validates whether adding `count` units of `type` stays within the site
@@ -110,13 +114,21 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
    * Automatically persists the current device layout to the backend with a debounce.
    */
   useEffect(() => {
-    // Disable auto-save during manual editing to prevent inconsistencies
-    if (devices.length === 0 || isManualMode) return;
+    if (devices.length === 0 || isManualMode || !activeSiteId) return;
     
     const timeoutId = setTimeout(async () => {
       try {
         setShowAutoSaveToast(true);
-        await saveSite(buildSitePayload(devices));
+        const payload = buildSitePayload(devices);
+        if (activeSiteId.startsWith('temp-')) {
+          const res = await createSiteApi({ ...payload, name: 'Untitled Site' });
+          if (res?.site) {
+            setActiveSiteId(res.site.id);
+            setAvailableSites(prev => prev.map(s => s.id === activeSiteId ? res.site : s));
+          }
+        } else {
+          await updateSiteApi(payload, API_ENDPOINTS.sites.byId(activeSiteId));
+        }
       } catch (err) {
         console.error('Auto-save failed:', err);
         setShowAutoSaveToast(false);
@@ -124,36 +136,41 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
     }, 2000);
 
     return () => clearTimeout(timeoutId);
-  }, [devices, saveSite, isManualMode]);
+  }, [devices, isManualMode, activeSiteId, createSiteApi, updateSiteApi]);
 
 
 
 
-  /**
-   * Loads the most recent site layout from the backend and
-   * restores device counts from it.
-   */
   const loadLatestSite = useCallback(async () => {
     try {
       const result = await getSites();
       if (result?.sites?.length) {
-        const layout = result.sites[0];
-        const restoredCounts = parseSiteLayoutToCounts(layout);
-
-        // Update counts first
-        (Object.entries(restoredCounts) as [keyof DeviceCounts, number][]).forEach(([type, count]) => {
-          updateCount(type, count);
-        });
-
-        // If the layout is manual, restore its devices and flag it as custom
-        if (isLayoutManual(layout.devices, restoredCounts)) {
-          toggleManualMode(false, layout.devices);
+        setAvailableSites(result.sites);
+        
+        let layout = result.sites.find(s => s.id === activeSiteId);
+        if (!layout && !activeSiteId) {
+          layout = result.sites[0];
+          setActiveSiteId(layout.id || null);
         }
+
+        if (layout) {
+          const restoredCounts = parseSiteLayoutToCounts(layout);
+
+          (Object.entries(restoredCounts) as [keyof DeviceCounts, number][]).forEach(([type, count]) => {
+            updateCount(type, count);
+          });
+
+          if (isLayoutManual(layout.devices, restoredCounts)) {
+            toggleManualMode(true, layout.devices); // Ensure layout forces manual true if custom
+          }
+        }
+      } else {
+        setAvailableSites([]);
       }
     } catch (err) {
       console.error('Failed to load sites', err);
     }
-  }, [getSites, updateCount, toggleManualMode]);
+  }, [getSites, updateCount, toggleManualMode, activeSiteId]);
 
   useEffect(() => {
     if (isManualMode) {
@@ -181,7 +198,13 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
 
 
     try {
-      await saveSite(buildSitePayload(devices));
+      const payload = buildSitePayload(devices);
+      if (!activeSiteId || activeSiteId.startsWith('temp-')) {
+        const res = await createSiteApi({ ...payload, name: 'Untitled Site' });
+        if (res?.site) setActiveSiteId(res.site.id);
+      } else {
+        await updateSiteApi(payload, API_ENDPOINTS.sites.byId(activeSiteId));
+      }
       toggleManualMode(false);
     } catch (err) {
       console.error('Failed to save manual layout:', err);
@@ -204,6 +227,34 @@ export const SitePlanner = ({ currentUser }: { currentUser: User }) => {
           <h2 id="welcome-heading">
             <span className={styles.highlight}>{t('dashboard.welcome')}</span> {currentUser.name}!
           </h2>
+          
+          <div className={styles.siteSelectorWrapper} style={{ marginTop: '1rem', width: '100%' }}>
+            <label htmlFor="site-selector" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 500, paddingBottom: '0.5rem', display: 'block' }}>Select Site:</label>
+            <div className={styles.stepperWrapper}>
+              <select
+                id="site-selector"
+                className={styles.stepperInput}
+                value={activeSiteId || ''}
+                onChange={(e) => {
+                  const id = e.target.value;
+                  if (id === 'create-new') {
+                    const newId = `temp-${Date.now()}`;
+                    setActiveSiteId(newId);
+                    setAvailableSites([{ id: newId, name: 'New Site', devices: [], updatedAt: new Date().toISOString(), ownerUsername: currentUser.username }, ...availableSites]);
+                    Object.keys(counts).forEach(type => updateCount(type as keyof DeviceCounts, 0));
+                    return;
+                  }
+                  setActiveSiteId(id);
+                }}
+                style={{ appearance: 'none', WebkitAppearance: 'none', backgroundColor: 'transparent', cursor: 'pointer', textAlign: 'left', paddingLeft: '1rem', border: 'none' }}
+              >
+                {availableSites.map(site => (
+                  <option key={site.id} value={site.id} style={{ color: '#000' }}>{site.name}</option>
+                ))}
+                <option value="create-new" style={{ color: '#000' }}>+ Create New Site</option>
+              </select>
+            </div>
+          </div>
           <div className={styles.separator} />
         </div>
 

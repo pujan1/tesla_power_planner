@@ -43,20 +43,6 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   res.json({ count: users.length, users });
 });
 
-interface SiteRequest extends AuthRequest {
-  body: any; // Or specific SiteLayout type
-}
-
-const saveSite = catchAsync<ParamsDictionary, any, any, Query>(async (req: SiteRequest, res: Response) => {
-  const site = await userService.saveSite(req.user!.username, req.body);
-  res.json({ message: 'Site saved successfully', site });
-});
-
-const getSites = catchAsync<ParamsDictionary, any, any, Query>(async (req: AuthRequest, res: Response) => {
-  const sites = await userService.getSites(req.user!.username);
-  res.json({ count: sites.length, sites });
-});
-
 export default {
   createUser,
   getMe,
@@ -64,6 +50,4 @@ export default {
   updateUser,
   login,
   getAllUsers,
-  saveSite,
-  getSites,
 };

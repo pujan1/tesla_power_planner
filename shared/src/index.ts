@@ -18,6 +18,7 @@ export interface SiteLayout {
   name: string;
   devices: SiteDevice[];
   updatedAt: string;
+  ownerUsername?: string;
 }
 
 export interface User {
@@ -26,7 +27,6 @@ export interface User {
   password?: string;
   language?: string;
   theme?: string;
-  sites?: SiteLayout[];
 }
 
 export interface AuthResponse {

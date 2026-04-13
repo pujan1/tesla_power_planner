@@ -9,5 +9,9 @@ export const API_ENDPOINTS = {
     create: '/users',
     get: (username: string) => `/users/${username}`,
     update: (username: string) => `/users/${username}`,
+  },
+  sites: {
+    base: '/sites',
+    byId: (id: string) => `/sites/${id}`
   }
 };
