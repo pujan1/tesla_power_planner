@@ -15,4 +15,5 @@ export interface BatteryMeshProps {
   args: [number, number, number]; // width, height, length
   color: string;
   energy: number;
+  isFlat?: boolean;
 }

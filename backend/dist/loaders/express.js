@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const user_routes_1 = __importDefault(require("../api/users/user.routes"));
-const errorHandler_1 = __importDefault(require("../middlewares/errorHandler"));
+const _1 = __importDefault(require("../middlewares/errorHandler"));
 const ApiError_1 = __importDefault(require("../utils/ApiError"));
 exports.default = async ({ app }) => {
     app.use((0, cors_1.default)());

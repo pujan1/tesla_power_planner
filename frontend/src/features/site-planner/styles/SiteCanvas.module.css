@@ -31,42 +31,7 @@
 }
 
 
-.layoutCanvas {
-  position: relative;
-  margin: auto; /* Center if fits, scroll if overflows */
-  
-  /* Industrial Ground: Concrete/Gravel Texture */
-  background-color: var(--bg-ground, #e0e0e0);
-  background-image: 
-    radial-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 4px 4px, 80px 80px, 80px 80px; /* 10ft grid over gravel noise */
-  
-  transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1);
-  transform-style: preserve-3d;
-  flex-shrink: 0;
-  box-shadow: 0 50px 100px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
 
-.manualMode {
-  /* 5ft Grid Pattern for layout precision */
-  background-image: 
-    radial-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
-    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  background-size: 8px 8px, 40px 40px, 40px 40px;
-  cursor: crosshair;
-}
-
-
-
-
-
-.is3D {
-  transform: rotateX(60deg) rotateZ(-40deg) translateY(-50px) translateZ(50px);
-}
 
 .deviceBlock {
   position: absolute;
@@ -143,33 +108,7 @@
 }
 
 
-/* 3D Extrusion Support */
-.is3DMode .deviceBlock {
-  transform: translateZ(var(--height));
-  box-shadow: none;
-}
 
-.is3DMode .deviceBlock::before {
-  width: var(--height);
-  height: 100%;
-  left: 0;
-  top: 0;
-  transform-origin: left;
-  transform: rotateY(-90deg);
-  background: inherit;
-  filter: brightness(0.6);
-}
-
-.is3DMode .deviceBlock::after {
-  width: 100%;
-  height: var(--height);
-  left: 0;
-  bottom: 0;
-  transform-origin: bottom;
-  transform: rotateX(-90deg);
-  background: inherit;
-  filter: brightness(0.4);
-}
 
 /* Hardware-Specific Tokens */
 .megapackxl {

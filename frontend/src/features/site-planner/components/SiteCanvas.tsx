@@ -1,10 +1,14 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
-import { useLanguage } from '../../../context/LanguageContext';
+import React, { useState, useRef, Suspense } from 'react';
 import { SiteDevice, DeviceType } from '@tesla/shared';
+import { Canvas } from '@react-three/fiber';
 
-import { DEVICE_PROPERTIES } from '../constants/device.constants';
-import { checkIntersections, snapToGrid } from '../helpers/validation.helpers';
+import { useTheme } from '../../../context/ThemeContext';
+import { snapToGrid } from '../helpers/validation.helpers';
 import styles from '../styles/SiteCanvas.module.css';
+
+import { SiteCanvas2D } from './SiteCanvas2D';
+import { DevicePalette } from './DevicePalette';
+import { TrashZone } from './TrashZone';
 
 interface SiteCanvasProps {
   devices: SiteDevice[];
@@ -18,67 +22,35 @@ interface SiteCanvasProps {
   onRemoveDevice?: (id: string) => void;
 }
 
-
-/** Pixels per foot for the 2D canvas rendering. */
 const SCALE = 8;
 const GRID_SIZE = 5;
 
+/**
+ * Main Orchestrator for the 2D layout engine.
+ * Renders the WebGL canvas, coordinate translations, floating HTML overlays,
+ * and maintains local dragging/palette selections.
+ */
 export const SiteCanvas = ({ 
   devices, 
   dimensions, 
-  is3D, 
+  is3D, // Maintained for backwards compatibility in parent 
   isManualMode, 
   onUpdatePosition,
-  onRevert,
-  onAutoArrange,
   onAddDevice,
   onRemoveDevice
 }: SiteCanvasProps) => {
 
-  const { t } = useLanguage();
+  const { theme } = useTheme();
+  
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [isPaletteDragging, setIsPaletteDragging] = useState<DeviceType | null>(null);
   const [palettePos, setPalettePos] = useState({ x: 0, y: 0 });
   
-  const dragOffset = useRef({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
   const trashRef = useRef<HTMLDivElement>(null);
 
-
-
-  // Dynamic gutter: Expand workspace by 100ft during manual edit
-  const currentGutter = isManualMode ? 100 : 10;
-  
-  const canvasWidth = (dimensions.width + currentGutter * 2) * SCALE;
-  const canvasHeight = (dimensions.length + currentGutter * 2) * SCALE;
-
-  const invalidIds = useMemo(() => checkIntersections(devices), [devices]);
-
-  const handleMouseDown = (e: React.MouseEvent, device: SiteDevice) => {
-    if (!isManualMode) return;
-    setDraggingId(device.id);
-    
-    // Calculate hit offset within the block to prevent jumping to corner
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    dragOffset.current = {
-      x: (e.clientX - rect.left) / SCALE,
-      y: (e.clientY - rect.top) / SCALE,
-    };
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!draggingId || !onUpdatePosition || !containerRef.current) return;
-
-    const rect = containerRef.current.getBoundingClientRect();
-    
-    // Convert mouse to local canvas ft, accounting for gutter
-    const rawX = (e.clientX - rect.left) / SCALE - currentGutter - dragOffset.current.x;
-    const rawY = (e.clientY - rect.top) / SCALE - currentGutter - dragOffset.current.y;
-
-    onUpdatePosition(draggingId, snapToGrid(rawX, GRID_SIZE), snapToGrid(rawY, GRID_SIZE));
-  };
-
   const handleMouseUp = (e: React.MouseEvent | React.TouchEvent) => {
+    // 1. Handle adding new device from floating palette
     if (isPaletteDragging && onAddDevice && containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect();
       const trashRect = trashRef.current?.getBoundingClientRect();
@@ -86,18 +58,27 @@ export const SiteCanvas = ({
       const clientX = 'touches' in e ? e.changedTouches[0].clientX : e.clientX;
       const clientY = 'touches' in e ? e.changedTouches[0].clientY : e.clientY;
 
-      // Check for trash drop first
       if (trashRect && 
           clientX >= trashRect.left && clientX <= trashRect.right && 
           clientY >= trashRect.top && clientY <= trashRect.bottom) {
-        // Just cancel add
+        // Cancel add - dropped perfectly into trash zone
       } else {
-        const rawX = (clientX - rect.left) / SCALE - currentGutter - 2;
-        const rawY = (clientY - rect.top) / SCALE - currentGutter - 2;
-        onAddDevice(isPaletteDragging, snapToGrid(rawX, GRID_SIZE), snapToGrid(rawY, GRID_SIZE));
+        const centerViewX = dimensions.width / 2;
+        const centerViewZ = dimensions.length / 2;
+        
+        // Pixel offset from center
+        const offsetX = clientX - (rect.left + rect.width / 2);
+        const offsetZ = clientY - (rect.top + rect.height / 2);
+        
+        // Translate DOM coordinates to orthographic WebGL layout
+        const worldX = centerViewX + (offsetX / SCALE) - 5; 
+        const worldZ = centerViewZ + (offsetZ / SCALE) - 5;
+        
+        onAddDevice(isPaletteDragging, snapToGrid(worldX, GRID_SIZE), snapToGrid(worldZ, GRID_SIZE));
       }
     }
 
+    // 2. Handle dropping an existing device into the trash zone
     if (draggingId && onRemoveDevice) {
       const trashRect = trashRef.current?.getBoundingClientRect();
       const clientX = 'touches' in e ? ('changedTouches' in e ? e.changedTouches[0].clientX : (e as any).clientX) : (e as any).clientX;
@@ -109,7 +90,6 @@ export const SiteCanvas = ({
         onRemoveDevice(draggingId);
       }
     }
-
 
     setDraggingId(null);
     setIsPaletteDragging(null);
@@ -126,96 +106,36 @@ export const SiteCanvas = ({
     setPalettePos({ x: clientX, y: clientY });
   };
 
-
   return (
     <div 
       className={styles.canvasContainer}
-      onMouseMove={(e) => { handleMouseMove(e); handlePaletteMove(e); }}
+      onMouseMove={handlePaletteMove}
       onMouseUp={handleMouseUp}
-      onMouseLeave={() => { setDraggingId(null); setIsPaletteDragging(null); }}
+      onMouseLeave={() => setIsPaletteDragging(null)}
       onTouchMove={handlePaletteMove}
       onTouchEnd={handleMouseUp}
+      style={{ overflow: 'hidden', position: 'relative', width: '100%', height: '100%' }}
+      ref={containerRef}
     >
-      <div className={styles.viewportWrapper}>
-        <div
-          ref={containerRef}
-          className={`${styles.layoutCanvas} ${is3D ? styles.is3D : ''} ${isManualMode ? styles.manualMode : ''}`}
-          style={{
-            width: Math.max(canvasWidth, 100 * SCALE),
-            height: Math.max(canvasHeight, 40 * SCALE),
-            padding: `${currentGutter * SCALE}px`,
-          } as any}
-        >
-          {devices.map((device: SiteDevice) => {
-            const props = DEVICE_PROPERTIES[device.type as keyof typeof DEVICE_PROPERTIES];
-            const isInvalid = invalidIds.has(device.id);
-            const isDragging = draggingId === device.id;
+      <Suspense fallback={<div style={{ padding: 20 }}>Loading 2D Map...</div>}>
+         <Canvas shadows={false} gl={{ antialias: false }}>
+            <SiteCanvas2D 
+               devices={devices}
+               dimensions={dimensions}
+               isManualMode={isManualMode}
+               draggingId={draggingId}
+               setDraggingId={setDraggingId}
+               onUpdatePosition={onUpdatePosition}
+               theme={theme}
+            />
+         </Canvas>
+      </Suspense>
 
-            return (
-              <div
-                key={device.id}
-                className={`
-                  ${styles.deviceBlock} 
-                  ${styles[device.type.toLowerCase()]} 
-                  ${is3D ? styles.is3DMode : ''} 
-                  ${isInvalid ? styles.invalid : ''} 
-                  ${isDragging ? styles.dragging : ''}
-                `}
-                style={{
-                  left: (device.x + currentGutter) * SCALE,
-                  top: (device.y + currentGutter) * SCALE,
-                  width: props.width * SCALE,
-                  height: props.length * SCALE,
-                  zIndex: isDragging ? 100 : 1,
-                } as any}
-                onMouseDown={(e) => handleMouseDown(e, device)}
-              >
-                <div className={styles.labelGroup}>
-                  {t(`device.${device.type.toLowerCase()}`)}
-                  {isManualMode && <span>{device.x}' , {device.y}'</span>}
-                  {!isManualMode && <span>{props.energy} MWh</span>}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      {/* Manual Mode DOM Overlays (Palette & Trash) */}
+      {isManualMode && <DevicePalette onStartDrag={handlePaletteStart} />}
+      {isManualMode && <TrashZone ref={trashRef} isActive={!!(draggingId || isPaletteDragging)} />}
 
-      {isManualMode && (
-        <div className={styles.mobilePalette}>
-          {(Object.values(DeviceType) as DeviceType[]).filter(v => v !== DeviceType.TRANSFORMER).map(type => (
-            <div 
-              key={type} 
-              className={styles.paletteItem}
-              onMouseDown={() => handlePaletteStart(type)}
-              onTouchStart={() => handlePaletteStart(type)}
-            >
-              <div 
-                className={`${styles.paletteIcon} ${styles[type.toLowerCase()]}`}
-              >
-                {type === DeviceType.MEGAPACK_XL ? 'XL' : type[0]}
-              </div>
-              <span>{t(`device.${type.toLowerCase()}`)}</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-
-      {isManualMode && (
-        <div 
-          ref={trashRef} 
-          className={`
-            ${styles.trashZone} 
-            ${(draggingId || isPaletteDragging) ? styles.trashVisible : ''}
-          `}
-          aria-label="Trash Bin - Drop here to remove device"
-        >
-          <div className={styles.trashIcon}>🗑️</div>
-          <span>Remove</span>
-        </div>
-      )}
-
+      {/* Ghost Block following cursor during add-from-palette */}
       {isPaletteDragging && (
         <div 
           className={`${styles.deviceBlock} ${styles.dragging}`} 
@@ -237,4 +157,3 @@ export const SiteCanvas = ({
     </div>
   );
 };
-

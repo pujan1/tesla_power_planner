@@ -61,7 +61,7 @@ const computePanelDivisions = (
  * @param props.energy   - Energy rating in MWh (displayed on label).
  * @returns A Three.js group containing the full battery mesh.
  */
-export const BatteryMesh = ({ type, position, args, color, energy }: BatteryMeshProps) => {
+export const BatteryMesh = ({ type, position, args, color, energy, isFlat }: BatteryMeshProps) => {
   const { t } = useLanguage();
   const meshRef = useRef<THREE.Group>(null);
   const [width, height, length] = args;
@@ -93,14 +93,18 @@ export const BatteryMesh = ({ type, position, args, color, energy }: BatteryMesh
   return (
     <group ref={meshRef} position={[position[0], position[1], position[2]]}>
       {/* Softened Industrial Frame */}
-      <RoundedBox radius={0.15} args={args} smoothness={4} receiveShadow castShadow>
-        <meshStandardMaterial 
-          color={color} 
-          roughness={0.2} 
-          metalness={0.9}
-          emissive={color}
-          emissiveIntensity={0.05}
-        />
+      <RoundedBox radius={0.15} args={args} smoothness={4} receiveShadow={!isFlat} castShadow={!isFlat}>
+        {isFlat ? (
+          <meshBasicMaterial color={color} />
+        ) : (
+          <meshStandardMaterial 
+            color={color} 
+            roughness={0.2} 
+            metalness={0.9}
+            emissive={color}
+            emissiveIntensity={0.05}
+          />
+        )}
       </RoundedBox>
       
       {/* Technical Status Light */}

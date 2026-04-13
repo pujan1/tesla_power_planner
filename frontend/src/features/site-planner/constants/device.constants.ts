@@ -9,11 +9,11 @@ export const DEVICE_PROPERTIES = {
 };
 
 export const DEVICE_COLORS: Record<string, string> = {
-  [DeviceType.MEGAPACK_XL]: '#cc0000',
-  [DeviceType.MEGAPACK_2]: '#222222',
-  [DeviceType.MEGAPACK]: '#333333',
-  [DeviceType.POWERPACK]: '#555555',
-  [DeviceType.TRANSFORMER]: '#0070f3',
+  [DeviceType.MEGAPACK_XL]: '#cc0000', // Signature Red
+  [DeviceType.MEGAPACK_2]: '#8e8e93', // Industrial silver
+  [DeviceType.MEGAPACK]: '#4d4d4d',   // Space gray
+  [DeviceType.POWERPACK]: '#2c2c2e',  // Matte dark
+  [DeviceType.TRANSFORMER]: '#176df2', // Tesla Energy blue
 };
 
 export const DEVICE_HEIGHTS: Record<string, number> = {
